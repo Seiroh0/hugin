@@ -98,7 +98,7 @@ final class ChatViewModel {
     func stop() { runTask?.cancel() }
 
     func addGrant(url: URL) {
-        do { _ = try security.addGrant(url: url); grants = security.loadGrants() }
+        do { _ = try security.addGrant(url: url); grants = security.loadGrants().grants }
         catch { status = .error("Freigabe fehlgeschlagen: \(error)") }
     }
 

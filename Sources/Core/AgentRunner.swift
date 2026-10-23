@@ -11,9 +11,9 @@ struct AgentRunner: Sendable {
     let confirm: @Sendable (ConfirmRequest) async -> Bool
 
     init(provider: ModelProvider, fileTools: FileTools, backupDir: URL,
-         onCard: @Sendable (ActionCard) -> Void,
-         onFinding: @Sendable (Finding) -> Void,
-         confirm: @Sendable (ConfirmRequest) async -> Bool) {
+         onCard: @escaping @Sendable (ActionCard) -> Void,
+         onFinding: @escaping @Sendable (Finding) -> Void,
+         confirm: @escaping @Sendable (ConfirmRequest) async -> Bool) {
         self.provider = provider; self.fileTools = fileTools; self.backupDir = backupDir
         self.onCard = onCard; self.onFinding = onFinding; self.confirm = confirm
     }
