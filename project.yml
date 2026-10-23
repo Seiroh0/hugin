@@ -19,6 +19,7 @@ targets:
       - Sources/UI
       - Assets.xcassets
     info:
+      path: Support/Info.plist
       properties:
         UIAppFonts:
           - Geist-Regular.ttf
