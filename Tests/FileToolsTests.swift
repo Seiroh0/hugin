@@ -113,4 +113,40 @@ final class FileToolsTests: XCTestCase {
         XCTAssertEqual(entries.map(\.name), ["a.txt", "b.txt", "sub"])
         XCTAssertEqual(entries.first { $0.isFolder }?.byteSize, nil)   // Ordner ohne Größe (Ruling R8)
     }
+
+    func testWriteNeu() throws {
+        XCTAssertNil(try tools.write("Doku/neu.md", content: "# x", overwrite: false, backupDir: backup))
+        XCTAssertEqual(try tools.read("Doku/neu.md"), "# x")
+    }
+    func testWriteExistiertOhneOverwrite() throws {
+        try tools.write("Doku/n.md", content: "a", overwrite: false, backupDir: backup)
+        XCTAssertThrowsError(try tools.write("Doku/n.md", content: "b", overwrite: false, backupDir: backup)) {
+            XCTAssertEqual($0 as? FileError, .existsNeedsConfirmation)
+        }
+    }
+    func testOverwriteMitBackup() throws {
+        try tools.write("Doku/n.md", content: "a", overwrite: false, backupDir: backup)
+        let card = try tools.write("Doku/n.md", content: "b", overwrite: true, backupDir: backup)
+        XCTAssertEqual(card?.kind, .backup)
+        XCTAssertEqual(try tools.read("Doku/n.md"), "b")
+        let backupPath = backup.appendingPathComponent(card!.detail)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: backupPath.path))
+        XCTAssertEqual(try String(contentsOf: backupPath, encoding: .utf8), "a")
+    }
+    func testRenameUndMove() throws {
+        try "x".write(to: tmp.appendingPathComponent("a.txt"), atomically: true, encoding: .utf8)
+        try FileManager.default.createDirectory(at: tmp.appendingPathComponent("sub"), withIntermediateDirectories: true)
+        XCTAssertEqual(try tools.rename("Doku/a.txt", to: "b.txt"), "Doku/b.txt")
+        XCTAssertEqual(try tools.move("Doku/b.txt", toFolder: "Doku/sub"), "Doku/sub/b.txt")
+        XCTAssertThrowsError(try tools.rename("Doku/sub/b.txt", to: "../c.txt")) { XCTAssertEqual($0 as? FileError, .outsideSandbox) }
+    }
+    func testRenameBlocktDotfiles() throws {
+        try "x".write(to: tmp.appendingPathComponent("sichtbar.txt"), atomically: true, encoding: .utf8)
+        XCTAssertThrowsError(try tools.rename("Doku/sichtbar.txt", to: ".versteckt.txt")) { XCTAssertEqual($0 as? FileError, .outsideSandbox) }
+    }
+    func testRenameMitUmlauten() throws {
+        let name = "Rechnung Ä-ö-ü 🧾.md"
+        try "Inhalt".write(to: tmp.appendingPathComponent(name), atomically: true, encoding: .utf8)
+        XCTAssertEqual(try tools.rename("Doku/\(name)", to: "Neu-Ä.md"), "Doku/Neu-Ä.md")
+    }
 }

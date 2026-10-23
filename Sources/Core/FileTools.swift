@@ -113,4 +113,49 @@ struct FileTools: Sendable {
         }
         return url.lastPathComponent
     }
+
+    @discardableResult
+    func write(_ relPath: String, content: String, overwrite: Bool, backupDir: URL) throws -> ActionCard? {
+        guard let checked = resolve(relPath) else { throw FileError.outsideSandbox }
+        let url = checked.resolvingSymlinksInPath()   // R8: Operation auf exakt dem geprüften Pfad
+        let exists = FileManager.default.fileExists(atPath: url.path)
+        if exists && !overwrite { throw FileError.existsNeedsConfirmation }
+        var backupCard: ActionCard? = nil
+        if exists {
+            try FileManager.default.createDirectory(at: backupDir, withIntermediateDirectories: true)
+            let backupURL = backupDir.appendingPathComponent("\(UUID().uuidString)-\(url.lastPathComponent)")
+            try FileManager.default.copyItem(at: url, to: backupURL)
+            backupCard = ActionCard(id: UUID(), kind: .backup, actor: nil, title: "Sicherung vor Überschreiben",
+                                    detail: backupURL.lastPathComponent, durationMS: nil, createdAt: Date())
+        }
+        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try content.write(to: url, atomically: true, encoding: .utf8)
+        return backupCard
+    }
+
+    func rename(_ relPath: String, to newName: String) throws -> String {
+        guard let checked = resolve(relPath) else { throw FileError.outsideSandbox }
+        guard !newName.contains("/"), !newName.hasPrefix(".") else { throw FileError.outsideSandbox }
+        let url = checked.resolvingSymlinksInPath()   // R8
+        guard FileManager.default.fileExists(atPath: url.path) else { throw FileError.notFound }
+        let target = url.deletingLastPathComponent().appendingPathComponent(newName)
+        guard !FileManager.default.fileExists(atPath: target.path) else { throw FileError.existsNeedsConfirmation }
+        do { try FileManager.default.moveItem(at: url, to: target) }
+        catch { throw FileError.ioFailure(error.localizedDescription) }
+        return relPath(of: target)
+    }
+
+    func move(_ relPath: String, toFolder: String) throws -> String {
+        guard let checked = resolve(relPath) else { throw FileError.outsideSandbox }
+        guard let checkedFolder = resolve(toFolder) else { throw FileError.outsideSandbox }
+        let url = checked.resolvingSymlinksInPath()   // R8
+        let folderURL = checkedFolder.resolvingSymlinksInPath()
+        var isDir: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: folderURL.path, isDirectory: &isDir), isDir.boolValue else { throw FileError.notAFolder }
+        let target = folderURL.appendingPathComponent(url.lastPathComponent)
+        guard !FileManager.default.fileExists(atPath: target.path) else { throw FileError.existsNeedsConfirmation }
+        do { try FileManager.default.moveItem(at: url, to: target) }
+        catch { throw FileError.ioFailure(error.localizedDescription) }
+        return relPath(of: target)
+    }
 }
