@@ -1,0 +1,46 @@
+name: Security
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: "0 4 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    name: Secret-Scan (gitleaks, ganze Historie)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  codeql:
+    name: CodeQL (Swift)
+    # Wichtig: macOS 26 / Xcode 26 pinnen – macOS 27/Xcode 27 brechen die
+    # traced builds (GitHub Changelog, Okt. 2026)
+    runs-on: macos-26
+    permissions:
+      security-events: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: XcodeGen installieren
+        run: brew install xcodegen
+      - name: CodeQL initialisieren
+        uses: github/codeql-action/init@v3
+        with:
+          languages: swift
+      - name: Projekt generieren
+        run: xcodegen generate
+      - name: Build (fuer CodeQL-Extraktion)
+        run: xcodebuild -project Hugin.xcodeproj -scheme Hugin -destination 'platform=iOS Simulator,name=iPad (A16)' build
+      - name: CodeQL analysieren
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:swift"
