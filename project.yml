@@ -17,8 +17,17 @@ targets:
       - Sources/Core
       - Sources/Store
       - Sources/UI
+      - Assets.xcassets
+    info:
+      properties:
+        UIAppFonts:
+          - Geist-Regular.ttf
+          - Geist-Medium.ttf
+          - Geist-SemiBold.ttf
+          - GeistMono-Regular.ttf
     settings:
       base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         PRODUCT_BUNDLE_IDENTIFIER: com.hugin.app
         INFOPLIST_KEY_CFBundleDisplayName: Hugin
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationPortrait
