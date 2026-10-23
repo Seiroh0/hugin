@@ -31,10 +31,16 @@ struct FileTools: Sendable {
             else { stack.append(c) }
         }
         let url = stack.reduce(root.url) { $0.appendingPathComponent($1) }
-        // ponytail: Containment doppelt – lexikalisch oben, hier real (dekodiert, Symlinks aufgelöst)
+        // ponytail: Containment doppelt – lexikalisch oben, hier real (dekodiert, Symlinks aufgelöst).
+        // iOS-Quirk: resolvingSymlinksInPath() löst bei NICHT-existierendem Leaf keine Symlinks auf
+        // → Parent (existiert immer) auflösen und prüfen; existierenden Leaf zusätzlich real prüfen.
         let rootPath = root.url.resolvingSymlinksInPath().path
-        let realPath = url.resolvingSymlinksInPath().path
-        guard realPath == rootPath || realPath.hasPrefix(rootPath + "/") else { return nil }
+        let parentReal = url.deletingLastPathComponent().resolvingSymlinksInPath().path
+        guard parentReal == rootPath || parentReal.hasPrefix(rootPath + "/") else { return nil }
+        if FileManager.default.fileExists(atPath: url.path) {
+            let fullReal = url.resolvingSymlinksInPath().path
+            guard fullReal == rootPath || fullReal.hasPrefix(rootPath + "/") else { return nil }
+        }
         return url
     }
 

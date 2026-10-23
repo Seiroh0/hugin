@@ -99,7 +99,7 @@ final class FileToolsTests: XCTestCase {
     func testSearch() throws {
         try "Rechnung 4711".write(to: tmp.appendingPathComponent("r1.md"), atomically: true, encoding: .utf8)
         try "x".write(to: tmp.appendingPathComponent("anders.txt"), atomically: true, encoding: .utf8)
-        let byName = try tools.search(nameContains: "4711", contentContains: nil)
+        let byName = try tools.search(nameContains: "r1", contentContains: nil)
         XCTAssertEqual(byName.map(\.name), ["r1.md"])
         let byContent = try tools.search(nameContains: "", contentContains: "4711")
         XCTAssertEqual(byContent.map(\.name), ["r1.md"])
