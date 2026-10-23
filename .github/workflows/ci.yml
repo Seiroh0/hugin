@@ -12,7 +12,7 @@ jobs:
       - name: Verfügbare Simulatoren (Debug-Hilfe)
         run: xcrun simctl list devices available
       - name: Tests
-        run: xcodebuild -project Hugin.xcodeproj -scheme Hugin -destination 'platform=iOS Simulator,name=iPad (A16) Simulator' test
+        run: xcodebuild -project Hugin.xcodeproj -scheme Hugin -destination 'platform=iOS Simulator,name=iPad (A16)' test
       - name: Unsigned IPA bauen
         run: |
           xcodebuild -project Hugin.xcodeproj -scheme Hugin -configuration Release -sdk iphoneos archive -archivePath build/Hugin.xcarchive
