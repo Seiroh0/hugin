@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="Assets/AppIcon.png">
-  <img src="Assets/AppIcon-hell.png" width="128" alt="Hugin App-Icon" title="Hugin">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/design/icon-readme-dark.png">
+  <img src="docs/design/icon-readme-light.png" width="128" alt="Hugin App-Icon" title="Hugin">
 </picture>
 
 # hugin
