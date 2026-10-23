@@ -32,14 +32,15 @@ struct FileTools: Sendable {
         }
         let url = stack.reduce(root.url) { $0.appendingPathComponent($1) }
         // ponytail: Containment doppelt – lexikalisch oben, hier real (dekodiert, Symlinks aufgelöst).
-        // iOS-Quirk: resolvingSymlinksInPath() löst bei NICHT-existierendem Leaf keine Symlinks auf
-        // → Parent (existiert immer) auflösen und prüfen; existierenden Leaf zusätzlich real prüfen.
+        // iOS-Quirk: resolvingSymlinksInPath() löst bei NICHT-existierendem Leaf keine Symlinks auf.
+        // Leaf existiert → Vollpfad-Prüfung (zuverlässig, deckt auch url == Root ab);
+        // Leaf fehlt → zusätzlich Parent-Prüfung (Parent existiert immer, auflösbar).
         let rootPath = root.url.resolvingSymlinksInPath().path
-        let parentReal = url.deletingLastPathComponent().resolvingSymlinksInPath().path
-        guard parentReal == rootPath || parentReal.hasPrefix(rootPath + "/") else { return nil }
-        if FileManager.default.fileExists(atPath: url.path) {
-            let fullReal = url.resolvingSymlinksInPath().path
-            guard fullReal == rootPath || fullReal.hasPrefix(rootPath + "/") else { return nil }
+        let urlReal = url.resolvingSymlinksInPath().path
+        guard urlReal == rootPath || urlReal.hasPrefix(rootPath + "/") else { return nil }
+        if !FileManager.default.fileExists(atPath: url.path) {
+            let parentReal = url.deletingLastPathComponent().resolvingSymlinksInPath().path
+            guard parentReal == rootPath || parentReal.hasPrefix(rootPath + "/") else { return nil }
         }
         return url
     }
