@@ -24,6 +24,8 @@ jobs:
     name: CodeQL (Swift)
     # Wichtig: macOS 26 / Xcode 26 pinnen – macOS 27/Xcode 27 brechen die
     # traced builds (GitHub Changelog, Okt. 2026)
+    # Läuft nur wöchentlich/manuell – nicht bei jedem Push (Runner-Last, Nutzerwunsch)
+    if: github.event_name != 'push'
     runs-on: macos-26
     permissions:
       security-events: write

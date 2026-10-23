@@ -1,5 +1,8 @@
 name: CI
-on: [push]
+on:
+  push:
+    branches: [master]
+    paths: ['Sources/**', 'Tests/**', 'project.yml', '.github/workflows/ci.yml']
 permissions:
   contents: read
 jobs:
