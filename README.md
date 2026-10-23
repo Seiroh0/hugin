@@ -113,6 +113,27 @@ Design-System und Verhalten sind vollständig dokumentiert in [`docs/design/DESI
 - **Phase 2 — Botengang erweitern:** App-Steuerung über App Intents (Mail, Kalender, Notizen), lange Hintergrund-Läufe
 - **Phase 3 — Sehen:** ScreenCapture-Verstehen („Was ist gerade auf meinem Bildschirm?")
 
+## Nutzung
+
+1. **Erster Start:** Launch-Sequenz abwarten — Funke, zwei Stäbe, aufsteigende Lichtspur, Aufflammen (≈ 1,4 s) — dann landet Hugin auf dem Start-Screen „Was soll ich für dich erledigen?".
+2. **Freigabe anlegen:** Seitenleiste → **Ordner freigeben**. Hugin arbeitet ausschließlich in deinen Freigaben — und löscht niemals etwas.
+3. **Claude-Key (optional):** Einstellungen → **Claude API-Key** eintragen (bleibt nur im iPad-Schlüsselbund). Ohne Key läuft der Modus „Im Haus" weiter.
+4. **Erster Auftrag:** z. B. *„Fasse meine Rechnungen des Mai zusammen"* — oder einfach einen der Vorschläge auf dem Start-Screen antippen.
+5. **Botengang:** Stelle am Composer oder in den Einstellungen ein, wie weit Hugin fliegt — **Im Haus** (nur iPad, offline) · **Nach Bedarf** (lokal zuerst, Claude nur bei schweren Aufträgen — jede Übergabe erscheint in der Flugbahn) · **Zu Claude** (ganze Kraft, nur die nötigen Dateien verlassen das iPad).
+6. **Überschreiben = Halten:** Will Hugin eine bestehende Datei ersetzen, zeigt er dir den **Diff** und legt vorher eine **Sicherung** an. Bestätigt wird erst, wenn du den Knopf **1,2 Sekunden hältst** — kein Ein-Klick-Accident.
+7. **Munin-Historie:** Jeder Auftrag landet in der Seitenleiste — mit Titel und Akteur, jederzeit wieder einsehbar, auch nach Neustart.
+8. **Alle 7 Tage:** Mit Gratis-Apple-ID verfällt die App nach 7 Tagen — einfach das aktuelle IPA erneut per Sideloadly installieren (Daten und Historie bleiben). Liegt dein PC nicht neben dem iPad: das IPA aus den Actions-Artifacts lässt sich auch über **Tailscale** übertragen.
+
+### Smoke-Checkliste (nach jeder Installation)
+
+- [ ] App startet mit der Launch-Sequenz (Funke → Stäbe → Lichtspur → Aufflammen → UI)
+- [ ] Start-Screen erscheint (Wortmarke, Composer, Vorschläge)
+- [ ] Ein Auftrag läuft mit sichtbarer Flugbahn (Knoten wie SUCHEN · LESEN · SCHREIBEN)
+- [ ] Beim Überschreiben erscheint der Halten-Dialog (Diff + Sicherungshinweis)
+- [ ] Das Fundstück-Panel zeigt gefundene Werte mit Akteur-Punkten
+- [ ] „Anhalten" stoppt den laufenden Auftrag („Angehalten.")
+- [ ] Der Munin-Eintrag bleibt nach App-Neustart erhalten
+
 ## FAQ
 
 **Warum gibt es keinen App-Store-Download?** Apple erlaubt Agent-Apps mit Ordnerzugriff nicht im regulären Vertrieb für private Konten. Sideload ist der ehrliche Weg.

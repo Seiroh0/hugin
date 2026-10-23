@@ -53,7 +53,12 @@ struct OrderView: View {
                 }
             }
             if vm.status == .thinking {
-                Button { vm.stop() } label: {
+                Button {
+                    // Backlog-Notiz T13: bei offenem Halten-Dialog erst ablehnen, dann anhalten
+                    // (resolve vor stop – sonst hinge die Confirmation-Continuation ersichtslos)
+                    if vm.pendingConfirmation != nil { vm.resolveConfirmation(false) }
+                    vm.stop()
+                } label: {
                     Label("Anhalten", systemImage: "stop.fill").font(HuginFont.geist(14))
                 }
                 .buttonStyle(.plain)
