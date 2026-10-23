@@ -1,4 +1,4 @@
-# Design-Spec: „PadPilot" – KI-Agent-App für das iPad
+# Design-Spec: „Hugin" – KI-Agent-App für das iPad
 
 Datum: 2026-10-23 · Status: zur Freigabe durch den Nutzer
 
@@ -20,7 +20,7 @@ Nur für den Eigengebrauch, kein App-Store-Vertrieb.
 | Installation | `.ipa` per GitHub-Artifact → Windows-PC → **Sideloadly** (Apple-ID); iPad hängt im Tailscale-Netz, Transfer direkt möglich |
 | Apple-Konto | Erst Gratis-Account (App läuft 7 Tage, dann neu installieren); 99 €/Jahr-Konto optional später |
 | KI-Backend | Hybrid: Apple Foundation Models (on-device, offline, gratis) + Anthropic Claude API (Cloud, eigener Key) |
-| App-Name (Arbeitstitel) | PadPilot |
+| App-Name (Arbeitstitel) | Hugin |
 | Projektordner | Alles in `E:\VSCode\Projekte\AIAgentIpad` |
 
 ## 3. Version 1 (MVP) – Dateien-Agent
@@ -60,7 +60,7 @@ KI-Schicht (LlamaProvider-Interface)
 Speicher: SwiftData (Chat-Verlauf, Freigaben, Einstellungen) · Keychain (API-Key)
 ```
 
-Bausteine (alle Swift 6 / SwiftUI, ein App-Target „PadPilot", iPadOS 27):
+Bausteine (alle Swift 6 / SwiftUI, ein App-Target „Hugin", iPadOS 27):
 
 1. **ChatViews** – Konversation, Aktionskarten, Eingabe, Statusanzeige
 2. **AgentRunner** – der Agent-Loop; begrenzt auf max. 15 Werkzeugaufrufe
@@ -69,7 +69,7 @@ Bausteine (alle Swift 6 / SwiftUI, ein App-Target „PadPilot", iPadOS 27):
 4. **ModelProvider-Protokoll** – gemeinsame Schnittstelle: `respond(prompt, tools, history)`;
    Implementierungen: `AppleSystemModel`, `ClaudeClient`
 5. **SecurityStore** – Ordner-Freigaben (security-scoped Bookmarks), Keychain-Zugriff
-6. **PadPilotStore** (SwiftData) – Verlauf + Einstellungen
+6. **HuginStore** (SwiftData) – Verlauf + Einstellungen
 7. **ModelPicker** – Wahl: Auto / Nur on-device / Nur Claude
 
 ### Hybrid-Regeln (Auto-Modus)
