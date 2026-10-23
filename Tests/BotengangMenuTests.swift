@@ -15,8 +15,8 @@ final class BotengangMenuTests: XCTestCase {
     func testDescWortlaut() {
         XCTAssertEqual(BotengangMenu.desc(for: .onDevice),
             "Hugin bleibt bei dir: offline, privat, schnell. Keine Datei verlässt das iPad.")
-        XCTAssertTrue(BotangangMenu.desc(for: .auto).contains("Jede Übergabe siehst du in der Flugbahn."))
-        XCTAssertTrue(BotangangMenu.desc(for: .claude).contains("nur die nötigen Dateien verlassen das iPad."))
+        XCTAssertTrue(BotengangMenu.desc(for: .auto).contains("Jede Übergabe siehst du in der Flugbahn."))
+        XCTAssertTrue(BotengangMenu.desc(for: .claude).contains("nur die nötigen Dateien verlassen das iPad."))
     }
     func testVorschlaegeNichtLeer() {
         XCTAssertEqual(StartView.vorschlaege.count, 3)
