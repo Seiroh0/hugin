@@ -28,7 +28,7 @@ struct StartView: View {
                 monoLabel("Vorschläge", color: HuginColor.glut)
                 ForEach(Self.vorschlaege, id: \.self) { v in
                     Button { vm.run(v) } label: {
-                        HStack { Image(systemName: "arrow.right"); Text(v) }
+                        HStack { Image(systemName: "arrow.right").foregroundStyle(HuginColor.glut); Text(v) }
                             .font(HuginFont.geist(19))
                     }
                     .buttonStyle(.plain)

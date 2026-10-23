@@ -43,8 +43,9 @@ struct BotengangMenu: View {
         }
         .padding(16)
         .frame(width: 384)
-        .background(RoundedRectangle(cornerRadius: 22).fill(Color(hex: 0x131418))
-            .stroke(HuginColor.border3))
+        .background(UnevenRoundedRectangle(topLeadingRadius: 22, bottomLeadingRadius: 6,
+                                           bottomTrailingRadius: 22, topTrailingRadius: 22, style: .continuous)
+            .fill(Color(hex: 0x131418)).stroke(HuginColor.border3))
         .shadow(color: .black.opacity(0.55), radius: 30)
     }
 }

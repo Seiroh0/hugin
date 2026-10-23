@@ -36,9 +36,15 @@ struct SidebarView: View {
                 monoLabel("Munin · Erinnerung")
                 ForEach(vm.munin) { order in
                     Button { onOpenOrder(order.id) } label: {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(order.title).lineLimit(1)
-                            monoText("\(order.actor)", size: 11, color: HuginColor.asche)
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(order.title).lineLimit(1)
+                                monoText(order.actor, size: 11, color: order.id == vm.currentOrderID ? HuginColor.frost : HuginColor.asche)
+                            }
+                            Spacer()
+                            if vm.running != nil && order.id == vm.currentOrderID {
+                                WispView(state: .denkt, actor: vm.running?.actor ?? .local, size: 8)
+                            }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -65,10 +71,11 @@ struct SidebarView: View {
         var body: some View {
             HStack(alignment: .top, spacing: 0) {
                 Text("hug").font(HuginFont.geist(30, .semibold))
-                ZStack {
-                    Text("ı").font(HuginFont.geist(30, .semibold))   // punktloses i
-                    WispView(state: .ruhe, actor: .local, size: 5).offset(y: 4)
-                }
+                Text("ı").font(HuginFont.geist(30, .semibold))   // punktloses i
+                    .overlay(alignment: .top) {
+                        WispView(state: .ruhe, actor: .local, size: 5)
+                            .offset(y: 4)   // sitzt als Punkt auf dem ı
+                    }
                 Text("n").font(HuginFont.geist(30, .semibold))
             }
             .foregroundStyle(HuginColor.knochen)

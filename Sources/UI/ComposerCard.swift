@@ -35,7 +35,8 @@ struct ComposerCard: View {
             }
         }
         .padding(18)
-        .background(RoundedRectangle(cornerRadius: 26)
+        .background(UnevenRoundedRectangle(topLeadingRadius: 26, bottomLeadingRadius: 6,
+                                           bottomTrailingRadius: 26, topTrailingRadius: 26, style: .continuous)
             .fill(HuginColor.composer).stroke(HuginColor.border3, lineWidth: 1))
         .overlay(alignment: .bottomLeading) {
             if menuOpen { BotengangMenu(vm: vm) { menuOpen = false } }
