@@ -1,6 +1,37 @@
+# --- SDD/Skills-Arbeitsbereich (nie committen) ---
 .superpowers/
+
+# --- Build-Artefakte ---
 DerivedData/
 build/
 *.xcodeproj
+*.xcarchive
+*.ipa
+*.dSYM
+
+# --- Xcode/IDE ---
 xcuserdata/
+.xcodebuild/
+.swiftpm/
+.vscode/
+.idea/
+
+# --- OS ---
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# --- SECRETS: niemals committen (Vertipper-Schutz) ---
+.env
+.env.*
+*.p8
+*.p12
+*.pem
+*.key
+*.mobileprovision
+*.cer
+*.crt
+secrets/
+.secrets/
+credentials*.json
+GoogleService-Info.plist
