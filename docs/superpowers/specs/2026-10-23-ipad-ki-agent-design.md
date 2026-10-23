@@ -20,13 +20,20 @@ Nur für den Eigengebrauch, kein App-Store-Vertrieb.
 | Installation | `.ipa` per GitHub-Artifact → Windows-PC → **Sideloadly** (Apple-ID); iPad hängt im Tailscale-Netz, Transfer direkt möglich |
 | Apple-Konto | Erst Gratis-Account (App läuft 7 Tage, dann neu installieren); 99 €/Jahr-Konto optional später |
 | KI-Backend | Hybrid: Apple Foundation Models (on-device, offline, gratis) + Anthropic Claude API (Cloud, eigener Key) |
-| App-Name (Arbeitstitel) | Hugin |
+| App-Name | Hugin („Der Gedanke, der für dich ausfliegt.") |
+| Design | Nutzer-Design verbindlich: `docs/design/DESIGN-SYSTEM.md` + 6 Boards in `docs/design/page-*.html` (Farb-/Typo-/Motion-System, Wisp-Zustände, Screens, Icon als SVG) |
 | Projektordner | Alles in `E:\VSCode\Projekte\AIAgentIpad` |
 
 ## 3. Version 1 (MVP) – Dateien-Agent
 
 ### Funktionen
-- **Chat-UI** (SwiftUI): Nachrichten, Agent-Aktionsliste, Status
+- **Design-System** (nach `docs/design/DESIGN-SYSTEM.md`): Basalt/Schiefer/Knochen/Asche + Glut (lokal)/Frost (Claude)/Rost (Fehler), Geist + Geist Mono, Wisp-Statuslicht mit 7 Zuständen, Motion-Tokens, Reduce-Motion-Support
+- **Seitenleiste**: Wortmarke, „Neuer Auftrag", Freigaben (mit Dateizahl), **Munin · Erinnerung** (Auftrags-Historie pro Auftrag: Titel, „wann · lokal/Claude", laufender Auftrag markiert), Einstellungen
+- **Start**: Composer-Card, **Botengang-Menü** (Im Haus / Nach Bedarf / Zu Claude, mit Flugbahn-Grafik iPad→Claude), Vorschläge
+- **Auftragsansicht (Flugbahn)**: Timeline mit Schritt-Typen (SUCHEN/LESEN/ÜBERGABE/BERICHT …), Akteur-Farbe pro Knoten, Dauer, laufender Schritt mit Wisp, Running-Pill (Schritt X/Y · Zeit), „Anhalten", **Fundstück-Panel** (Live-Extraktion: aktuelle Datei + bisher gefundene Werte mit Akteur-Punkten), „Nächsten Auftrag vormerken"
+- **Überschreiben**: Modal „WARTET AUF DICH" mit **Diff-Vorschau (alt/neu)**, Sicherungs-Hinweis mit Zeitstempel-Pfad, Bestätigung per **Halten-Knopf (1,2 s)** mit Fortschrittsring
+- **Start-Sequenz**: 1,4 s App-Start-Animation (Funke → Stäbe → Lichtspur → Aufflammen → UI)
+- **Chat**: Auftragstext des Nutzers groß, Antwort + Bericht
 - **Ordner-Freigabe**: Nutzer wählt Ordner über den System-Dialog (security-scoped Bookmark, dauerhafter Zugriff)
 - **Werkzeuge des Agenten** (nur innerhalb freigegebener Ordner):
   - Dateien listen & durchsuchen (Name + Inhalt bei Text/PDF)
@@ -34,9 +41,11 @@ Nur für den Eigengebrauch, kein App-Store-Vertrieb.
   - Dateien erstellen & bearbeiten (Textformate)
   - Umbenennen & verschieben
   - Zusammenfassungen/Analysen mehrerer Dateien
-- **Jede Aktion** erscheint als Karte im Chat (was wurde getan, welche Datei)
-- **Kein Löschen.** Überschreiben nur nach expliziter Bestätigung; vor dem
-  Überschreiben legt die App automatisch eine Sicherungskopie im App-Container ab.
+  - **`note_finding`**: Modell meldet gefundene Werte (z. B. „Strom: 64,20 €") → Fundstück-Panel
+- **Jede Aktion** erscheint als Karte in der Flugbahn (Typ, Akteur-Farbe, was wurde getan, Dauer)
+- **Kein Löschen.** Überschreiben nur nach Halten-Bestätigung; vor dem
+  Überschreiben legt die App automatisch eine Sicherungskopie im App-Container ab
+  (Pfad-Schema: `Sicherungen/<Datum_Uhrzeit>/<Datei>`).
 
 ### Bewusste Nicht-Ziele (MVP)
 - Löschen von Dateien
@@ -95,9 +104,9 @@ Bausteine (alle Swift 6 / SwiftUI, ein App-Target „Hugin", iPadOS 27):
 | Kein Internet | Nur on-device, Hinweis im Chat |
 | Claude-Key fehlt/ungültig | Klare Meldung + Einstellungen-Link, on-device bleibt nutzbar |
 | Ordner-Freigabe abgelaufen | Dialog zur Neu-Freigabe |
-| On-device-Modell überfragt | Auto-Eskalation an Claude (s. oben) |
-| Werkzeug-Fehler (Datei fehlt etc.) | Fehler als Beobachtung an die KI → Agent korrigiert selbst; nach 15 Aufrufen Stopp + Bericht |
-| Überschreiben | Bestätigungsdialog + automatische Sicherungskopie |
+| On-device-Modell überfragt | Auto-Eskalation an Claude (s. oben), sichtbar als ÜBERGABE-Knoten in der Flugbahn |
+| Werkzeug-Fehler (Datei fehlt etc.) | Fehler als Beobachtung an die KI → Agent korrigiert selbst (Wisp: „Stockt"); nach 15 Aufrufen Stopp + Bericht |
+| Überschreiben | Halten-Bestätigung (1,2 s) mit Diff-Vorschau + automatische Sicherungskopie |
 
 ## 7. Sicherheit & Datenschutz
 
