@@ -20,6 +20,12 @@ final class ClaudeClient: ModelProvider, @unchecked Sendable {
         req.httpBody = try encodeBody(system: system, messages: messages, tools: tools)
         let data: Data; let resp: URLResponse
         do { (data, resp) = try await session.data(for: req) }
+        catch let urlError as URLError where urlError.code == .cancelled {
+            throw CancellationError()   // „Anhalten" bleibt „Angehalten", kein Fake-Netzwerkfehler
+        }
+        catch is CancellationError {
+            throw CancellationError()
+        }
         catch { throw ModelError.network(error.localizedDescription) }
         guard let http = resp as? HTTPURLResponse else { throw ModelError.network("Keine HTTP-Antwort") }
         guard http.statusCode == 200 else {
@@ -36,11 +42,15 @@ final class ClaudeClient: ModelProvider, @unchecked Sendable {
             case .user(let t):
                 msgs.append(.object(["role": .string("user"), "content": .string(t)]))
             case .assistant(let t, let calls):
-                var blocks: [JSONValue] = [.object(["type": .string("text"), "text": .string(t)])]
+                var blocks: [JSONValue] = []
+                if !t.isEmpty {
+                    blocks.append(.object(["type": .string("text"), "text": .string(t)]))
+                }
                 for c in calls {
                     blocks.append(.object(["type": .string("tool_use"), "id": .string(c.id),
                                             "name": .string(c.name), "input": c.arguments]))
                 }
+                if blocks.isEmpty { blocks.append(.object(["type": .string("text"), "text": .string("")])) }
                 msgs.append(.object(["role": .string("assistant"), "content": .array(blocks)]))
             case .toolResult(let id, let content):
                 msgs.append(.object(["role": .string("user"), "content": .array([

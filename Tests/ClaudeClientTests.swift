@@ -6,7 +6,10 @@ final class MockURLProtocol: URLProtocol {
     override class func canInit(with request: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
     override func startLoading() {
-        guard let h = MockURLProtocol.handler else { return client?.urlProtocol(self, didFailWithError: URLError(.badServerResponse)) }
+        guard let h = MockURLProtocol.handler else {
+            client?.urlProtocol(self, didFailWithError: URLError(.badServerResponse))
+            return
+        }
         do {
             let (status, data) = try h(request)
             client?.urlProtocol(self, didReceive: HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: nil, headerFields: nil)!, cacheStoragePolicy: .notAllowed)
@@ -63,6 +66,37 @@ final class ClaudeClientTests: XCTestCase {
             _ = try await client.respond(system: "s", messages: [], tools: [])
             XCTFail("erwartet unauthorized")
         } catch { XCTAssertEqual(error as? ModelError, .unauthorized) }
+        MockURLProtocol.handler = nil
+    }
+
+    func testAbbruchWirftCancellation() async {
+        MockURLProtocol.handler = { _ in throw URLError(.cancelled) }
+        let client = makeClient()
+        do {
+            _ = try await client.respond(system: "s", messages: [.user("hi")], tools: [])
+            XCTFail("Cancellation erwartet")
+        } catch {
+            XCTAssertTrue(error is CancellationError, "war kein Abbruch: \(error)")
+        }
+        MockURLProtocol.handler = nil
+    }
+
+    func testLeererAssistantTextBlockWirdAusgelassen() async throws {
+        MockURLProtocol.handler = { req in
+            let body = req.httpBody ?? req.httpBodyStreamData ?? Data()
+            let json = try JSONValue.from(data: body)
+            if case .array(let msgs)? = json["messages"] {
+                if case .array(let blocks)? = msgs.first?["content"] {
+                    XCTAssertFalse(blocks.contains { $0["text"]?.stringValue == "" },
+                                   "leerer text-block im assistant-content")
+                }
+            }
+            return (200, Data(#"{"content": [{"type": "text", "text": "ok"}]}"#.utf8))
+        }
+        let client = makeClient()
+        _ = try await client.respond(system: "s",
+            messages: [.assistant(text: "", toolCalls: [.init(id: "1", name: "t", arguments: .object([:]))])],
+            tools: [])
         MockURLProtocol.handler = nil
     }
 }
