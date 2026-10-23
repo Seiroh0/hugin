@@ -1582,7 +1582,9 @@ private extension String {
 }
 
 /// Karten-Speicher ohne async – Mutex statt Actor, damit synchrone onCard-Closures nutzbar bleiben
-/// (import Synchronization; falls im Ziel-SDK nicht verfügbar: DispatchQueue-Lock als Ersatz)
+/// (falls `Synchronization` im Ziel-SDK fehlt: DispatchQueue-Lock als Ersatz)
+import Synchronization
+
 final class CardBuffer: @unchecked Sendable {
     private let mutex = Mutex<[ActionCard]>([])
     func add(_ card: ActionCard) { mutex.withLock { $0.append(card) } }
@@ -1602,7 +1604,7 @@ Hinweis: `write` erhält `overwrite: exists`, weil der Bestätigungsfall oben be
 - Test: `Tests/ChatViewModelTests.swift`
 
 **Interfaces:**
-- Consumes: AgentRunner, AppleSystemModel, ClaudeClient, SecurityStore, PadPilotStore, ChatMessage. Produces: `@MainActor @Observable final class ChatViewModel` mit `enum Mode: String, Codable { auto, onDevice, claude }`, `var messages: [ChatMessage]`, `var status: Status { idle, thinking, error(String) }`, `var mode: Mode`, `var grants: [Grant]`, `var draft: String`, `var pendingConfirmation: Confirmation?`, `func load()`, `func addGrant(url: URL)`, `func saveKey(_ key: String)`, `func run(_ text: String)` (startet internen Task), `func waitForRunEnd() async`, `func resolveConfirmation(_ allowed: Bool)`, `struct Confirmation: Identifiable { id, prompt }`. Init (testbar): `init(security: SecurityStore = SecurityStore(), store: PadPilotStore? = nil, makeProvider: ((Mode) throws -> ModelProvider)? = nil)` – Ohne injizierte Factory baut das VM echte Provider (AppleSystemModel/ClaudeClient mit Key aus dem Keychain). Chat-Befehl „nutz Claude“/„nutz lokal“ im Auftragstext überschreibt den Modus für diesen Lauf; `sessionID` und `mode` persistieren in UserDefaults (Verlauf überlebt App-Neustart); `run` blockt Doppelstarts; Auto-Modus: on-device → Claude, plus Rückfall Claude → on-device bei Netzwerk-/Key-Fehlern (Hint-Karte)
+- Consumes: AgentRunner, AppleSystemModel, ClaudeClient, SecurityStore, PadPilotStore, ChatMessage. Produces: `@MainActor @Observable final class ChatViewModel` mit `enum Mode: String, Codable { auto, onDevice, claude }`, `var messages: [ChatMessage]`, `var status: Status { idle, thinking, error(String) }`, `var mode: Mode`, `var grants: [Grant]`, `var draft: String`, `var pendingConfirmation: Confirmation?`, `func load()`, `func addGrant(url: URL)`, `func saveKey(_ key: String)`, `func run(_ text: String)` (startet internen Task), `func waitForRunEnd() async`, `func resolveConfirmation(_ allowed: Bool)`, `struct Confirmation: Identifiable { id, prompt }`. Init (testbar): `init(security: SecurityStore = SecurityStore(), store: PadPilotStore? = nil, makeProvider: (@MainActor (Mode, CardBuffer) throws -> ModelProvider)? = nil)` – ohne injizierte Factory baut das VM echte Provider (AppleSystemModel/ClaudeClient mit Key aus dem Keychain; `CardBuffer` wird als Parameter übergeben statt über MainActor-State gelesen). Chat-Befehl „nutz Claude“/„nutz lokal“ im Auftragstext überschreibt den Modus für diesen Lauf; `sessionID` und `mode` persistieren in UserDefaults (Verlauf überlebt App-Neustart); `run` blockt Doppelstarts; Auto-Modus: on-device → Claude (bei Init- UND Laufzeit-Fehlern, Hint-Karte); bei Claude-Netzwerk-/Key-Fehlern klare Meldung, on-device bleibt über den Modus-Picker nutzbar
 
 - [ ] **Schritt 1: Tests schreiben**
 ```swift
@@ -1611,13 +1613,13 @@ import XCTest
 
 @MainActor
 final class ChatViewModelTests: XCTestCase {
-    func makeVM(makeProvider: @escaping (ChatViewModel.Mode) throws -> ModelProvider) throws -> ChatViewModel {
+    func makeVM(makeProvider: @escaping @MainActor (ChatViewModel.Mode, CardBuffer) throws -> ModelProvider) throws -> ChatViewModel {
         ChatViewModel(store: try PadPilotStore(inMemory: true), makeProvider: makeProvider)
     }
 
     func testRunHaengtAntwortAn() async throws {
         let fake = FakeProvider(script: [.init(text: "Erledigt", toolCalls: [])])
-        let vm = try makeVM { _ in fake }
+        let vm = try makeVM { _, _ in fake }
         vm.run("test")
         await vm.waitForRunEnd()
         XCTAssertEqual(vm.messages.first?.role, .user)
@@ -1627,7 +1629,7 @@ final class ChatViewModelTests: XCTestCase {
 
     func testAutoEskaliertBeiUnavailable() async throws {
         let claude = FakeProvider(script: [.init(text: "via Claude", toolCalls: [])])
-        let vm = try makeVM { mode in
+        let vm = try makeVM { mode, _ in
             if mode == .onDevice { throw ModelError.unavailable }
             return claude
         }
@@ -1642,7 +1644,7 @@ final class ChatViewModelTests: XCTestCase {
     func testVerlaufWirdGespeichert() async throws {
         let fake = FakeProvider(script: [.init(text: "ok", toolCalls: [])])
         let store = try PadPilotStore(inMemory: true)
-        let vm = ChatViewModel(store: store, makeProvider: { _ in fake })
+        let vm = ChatViewModel(store: store, makeProvider: { _, _ in fake })
         vm.run("hallo")
         await vm.waitForRunEnd()
         let loaded = store.load(sessionID: vm.sessionID)
@@ -1663,7 +1665,7 @@ final class ChatViewModelTests: XCTestCase {
                 arguments: .object(["path": .string("\(grant.name)/exists.txt"), "content": .string("x")]))]),
             .init(text: "fertig", toolCalls: [])
         ])
-        let vm = ChatViewModel(security: sec, store: try PadPilotStore(inMemory: true), makeProvider: { _ in fake })
+        let vm = ChatViewModel(security: sec, store: try PadPilotStore(inMemory: true), makeProvider: { _, _ in fake })
         vm.run("schreibe")
         var tries = 0
         while vm.pendingConfirmation == nil && tries < 500 {   // begrenzter Wait statt Endlos-Schleife
@@ -1682,17 +1684,17 @@ final class ChatViewModelTests: XCTestCase {
     func testSessionUeberlebtNeustart() async throws {
         let fake = FakeProvider(script: [.init(text: "ok", toolCalls: [])])
         let store = try PadPilotStore(inMemory: true)
-        let vm1 = ChatViewModel(store: store, makeProvider: { _ in fake })
+        let vm1 = ChatViewModel(store: store, makeProvider: { _, _ in fake })
         vm1.run("hallo")
         await vm1.waitForRunEnd()
-        let vm2 = ChatViewModel(store: store, makeProvider: { _ in fake })  // gleiche sessionID aus UserDefaults
+        let vm2 = ChatViewModel(store: store, makeProvider: { _, _ in fake })  // gleiche sessionID aus UserDefaults
         vm2.load()
         XCTAssertEqual(vm2.messages.count, 2)
     }
 
     func testDoppelterRunBlockiert() async throws {
         let fake = FakeProvider(script: [.init(text: "ok", toolCalls: [])])
-        let vm = try makeVM { _ in fake }
+        let vm = try makeVM { _, _ in fake }
         vm.run("eins")
         vm.run("zwei")   // während des ersten Laufs verworfen
         await vm.waitForRunEnd()
@@ -1735,23 +1737,24 @@ final class ChatViewModel {
 
     private let security: SecurityStore
     private let store: PadPilotStore?
-    private var makeProvider: ((Mode) throws -> ModelProvider)!  // IUO: Zuweisung NACH allen anderen Properties (self-Capture erst dann erlaubt)
+    // @MainActor-Closure, IUO: Zuweisung NACH allen anderen Properties (self-Capture erst dann erlaubt);
+    // CardBuffer läuft als Parameter mit – kein MainActor-State aus @Sendable-Closures gelesen
+    private var makeProvider: (@MainActor (Mode, CardBuffer) throws -> ModelProvider)!
     private var runTask: Task<Void, Never>?
-    private var activeCards: CardBuffer?
 
     init(security: SecurityStore = SecurityStore(),
          store: PadPilotStore? = nil,
          makeProvider: ((Mode) throws -> ModelProvider)? = nil) {
         self.security = security
         self.store = store
-        self.makeProvider = makeProvider ?? { [weak self] mode in
+        self.makeProvider = makeProvider ?? { [weak self] mode, cards in
             guard let self else { throw ModelError.network("ViewModel nicht mehr verfügbar") }
             switch mode {
             case .onDevice:
                 guard let onDevice = AppleSystemModel(fileTools: self.fileTools(),
-                                                     backupDir: self.backupDir,
-                                                     onCard: { self.activeCards?.add($0) },
-                                                     confirm: self.confirmBridge) else {
+                                                      backupDir: self.backupDir,
+                                                      onCard: { cards.add($0) },
+                                                      confirm: self.confirmBridge) else {
                     throw ModelError.unavailable
                 }
                 return onDevice
@@ -1817,23 +1820,25 @@ final class ChatViewModel {
     }
 
     private func executeRun(prompt: String, prior: [ProviderMessage], modeForRun: Mode) async {
+        let cards = CardBuffer()
         do {
-            let (provider, hint) = try resolveProvider(mode: modeForRun)
-            var cards: [ActionCard] = hint.map { [$0] } ?? []
-            let (finalText, stepCards) = try await runAgent(provider: provider, text: prompt, prior: prior)
-            cards += stepCards
-            messages.append(ChatMessage(role: .assistant, text: finalText, cards: cards))
+            let (provider, hint) = try resolveProvider(mode: modeForRun, cards: cards)
+            var allCards: [ActionCard] = hint.map { [$0] } ?? []
+            let (finalText, stepCards) = try await runAgent(provider: provider, cards: cards, text: prompt, prior: prior)
+            allCards += stepCards
+            messages.append(ChatMessage(role: .assistant, text: finalText, cards: allCards))
             status = .idle
         } catch {
-            // Auto-Rückfall (Spec: „Kein Internet → automatisch nur on-device, mit Hinweis“)
-            if modeForRun == .auto,
-               let me = error as? ModelError, me != .unavailable,
-               let onDevice = try? makeProvider(.onDevice) {
+            // Laufzeit-Eskalation (nur auto): onDevice-Modell versagt mitten im Lauf → Claude.
+            // Init-Fälle eskaliert resolveProvider bereits; Claude-Netzwerk-/Key-Fehler → klare
+            // Meldung, on-device bleibt über den Modus-Picker nutzbar (Spec: „Kein Internet → nur on-device“)
+            if modeForRun == .auto, (error as? ModelError) == .unavailable,
+               let claude = try? makeProvider(.claude, cards) {
                 let hint = ActionCard(id: UUID(), kind: .hint,
-                                      title: "Claude nicht erreichbar – nutze on-device",
+                                      title: "On-Device fehlgeschlagen – nutze Claude",
                                       detail: "\(error)", createdAt: Date())
                 do {
-                    let (finalText, stepCards) = try await runAgent(provider: onDevice, text: prompt, prior: prior)
+                    let (finalText, stepCards) = try await runAgent(provider: claude, cards: cards, text: prompt, prior: prior)
                     messages.append(ChatMessage(role: .assistant, text: finalText, cards: [hint] + stepCards))
                     status = .idle
                     if let store { try? store.save(sessionID: sessionID, messages: messages) }
@@ -1847,9 +1852,7 @@ final class ChatViewModel {
         if let store { try? store.save(sessionID: sessionID, messages: messages) }
     }
 
-    private func runAgent(provider: ModelProvider, text: String, prior: [ProviderMessage]) async throws -> (String, [ActionCard]) {
-        let cards = CardBuffer()
-        activeCards = cards
+    private func runAgent(provider: ModelProvider, cards: CardBuffer, text: String, prior: [ProviderMessage]) async throws -> (String, [ActionCard]) {
         let runner = AgentRunner(provider: provider, fileTools: fileTools(), backupDir: backupDir,
                                  onCard: { cards.add($0) }, confirm: confirmBridge)
         let result = try await runner.run(userText: text, prior: prior)
@@ -1861,18 +1864,18 @@ final class ChatViewModel {
         return (finalText, cards.all)
     }
 
-    private func resolveProvider(mode: Mode) throws -> (ModelProvider, ActionCard?) {
+    private func resolveProvider(mode: Mode, cards: CardBuffer) throws -> (ModelProvider, ActionCard?) {
         switch mode {
         case .onDevice:
-            return (try makeProvider(.onDevice), nil)
+            return (try makeProvider(.onDevice, cards), nil)
         case .claude:
-            return (try makeProvider(.claude), nil)
+            return (try makeProvider(.claude, cards), nil)
         case .auto:
-            do { return (try makeProvider(.onDevice), nil) }
+            do { return (try makeProvider(.onDevice, cards), nil) }
             catch {
                 let hint = ActionCard(id: UUID(), kind: .hint, title: "On-Device nicht möglich, wechsle zu Claude",
                                       detail: "\(error)", createdAt: Date())
-                return (try makeProvider(.claude), hint)
+                return (try makeProvider(.claude, cards), hint)
             }
         }
     }
@@ -2132,5 +2135,5 @@ struct ChatView: View {
 1. **Spec-Abdeckung:** Chat ✓ (T13/14), Ordner-Freigabe ✓ (T8/14), Datei-Werkzeuge ✓ (T5–7), kein Löschen ✓ (kein Werkzeug), Überschreiben nur mit Bestätigung + Backup ✓ (T7/12/13/14), Aktionskarten ✓ (T4/12/14), Hybrid-KI + Auto-Eskalation ✓ (T11/13), Verlauf ✓ (T9/13), Keychain ✓ (T8/14), CI/IPA ✓ (T1/14), Roadmap-Phasen außerhalb des MVP ✓.
 2. **Platzhalter:** keiner; bewusste Stellschrauben (Runner-Image, Simulator-Name, FM-Signaturen) sind als solche markiert und haben Prüf-Schritte.
 3. **Typ-Konsistenz:** `FileTools.write` heißt überall gleich; `Confirmation.continuation` (T13) ↔ ChatView `.alert` (T14); `AgentRunner.confirm` ist `(String) -> Bool` (VM macht `await MainActor.run`-Brücke) – konsistent zwischen T12/T13.
-4. **Review-Fokus:** Pfad-Flucht inkl. Symlink/Percent-Encoding (T5), Überschreiben inkl. Gate-Bypass über `overwrite:true` (T7/12/13), Werkzeug-Limit als harter Aufruf-Zähler (T12), Bookmark-Verfall mit Zähler + Neu-Freigabe-Hinweis (T8/13), 401/offline + Auto-Rückfall on-device (T10/13), Verlauf überlebt App-Neustart (T13), Doppel-Run-Blockierung (T13) – jeweils mit Test verankert.
+4. **Review-Fokus:** Pfad-Flucht inkl. Symlink/Percent-Encoding (T5), Überschreiben inkl. Gate-Bypass über `overwrite:true` (T7/12/13), Werkzeug-Limit als harter Aufruf-Zähler (T12), Bookmark-Verfall mit Zähler + Neu-Freigabe-Hinweis (T8/13), 401/offline-Meldungen + Laufzeit-Eskalation on-device→Claude (T10/13), Verlauf überlebt App-Neustart (T13), Doppel-Run-Blockierung (T13) – jeweils mit Test verankert.
 ```
