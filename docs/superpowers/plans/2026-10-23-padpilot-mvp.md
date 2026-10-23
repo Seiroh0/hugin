@@ -1641,6 +1641,23 @@ final class ChatViewModelTests: XCTestCase {
         XCTAssertTrue(assistant.cards.contains { $0.kind == .hint })
     }
 
+    struct UnavailableProvider: ModelProvider, Sendable {
+        let name = "Unavailable"
+        func respond(system: String, messages: [ProviderMessage], tools: [ToolSpec]) async throws -> ProviderResponse {
+            throw ModelError.unavailable   // wirft erst ZUR LAUFZEIT (nicht bei der Factory)
+        }
+    }
+
+    func testAutoEskaliertBeiLaufzeitFehler() async throws {
+        let claude = FakeProvider(script: [.init(text: "via Claude gerettet", toolCalls: [])])
+        let vm = try makeVM { mode, _ in mode == .onDevice ? UnavailableProvider() : claude }
+        vm.mode = .auto
+        vm.run("mach was")
+        await vm.waitForRunEnd()
+        XCTAssertEqual(vm.messages.last?.text, "via Claude gerettet")
+        XCTAssertTrue(vm.messages.last?.cards.contains { $0.kind == .hint })  // Laufzeit-Hinweiskarte
+    }
+
     func testVerlaufWirdGespeichert() async throws {
         let fake = FakeProvider(script: [.init(text: "ok", toolCalls: [])])
         let store = try PadPilotStore(inMemory: true)
@@ -1744,7 +1761,7 @@ final class ChatViewModel {
 
     init(security: SecurityStore = SecurityStore(),
          store: PadPilotStore? = nil,
-         makeProvider: ((Mode) throws -> ModelProvider)? = nil) {
+         makeProvider: (@MainActor (Mode, CardBuffer) throws -> ModelProvider)? = nil) {
         self.security = security
         self.store = store
         self.makeProvider = makeProvider ?? { [weak self] mode, cards in
@@ -1917,7 +1934,7 @@ final class ChatViewModel {
 }
 ```
 
-Hinweis: `CardBuffer` kommt aus Task 12 (Mutex statt Actor) – `onCard` bleibt synchron, `activeCards` vom Typ `CardBuffer?`.
+Hinweis: `CardBuffer` kommt aus Task 12 (Mutex statt Actor) – `onCard` bleibt synchron, der Buffer fließt als Parameter durch Factory, resolveProvider und Runner.
 - [ ] **Schritt 3: Commit + Push + CI grün** – `git commit -m "feat: ChatViewModel mit Auto-Eskalation und Bestätigungsbrücke"`
 - [ ] **Schritt 4: Review-Fokus** – Claude 401/offline → Nutzer-Meldung + on-device bleibt nutzbar (`testAutoEskaliertBeiUnavailable` deckt Eskalation ab; Fehlertext-Mapping prüfen).
 
