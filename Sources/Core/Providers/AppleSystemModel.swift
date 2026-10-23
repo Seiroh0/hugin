@@ -11,9 +11,9 @@ final class AppleSystemModel: ModelProvider, @unchecked Sendable {
     private let confirm: @Sendable (ConfirmRequest) async -> Bool
 
     init?(fileTools: FileTools, backupDir: URL,
-          onCard: @Sendable (ActionCard) -> Void,
-          onFinding: @Sendable (Finding) -> Void,
-          confirm: @Sendable (ConfirmRequest) async -> Bool) {
+          onCard: @escaping @Sendable (ActionCard) -> Void,
+          onFinding: @escaping @Sendable (Finding) -> Void,
+          confirm: @escaping @Sendable (ConfirmRequest) async -> Bool) {
         // API-Abweichung ggü. Brief: isAvailable ist Instanz-Eigenschaft von
         // SystemLanguageModel.default (Apple-Doku), nicht statisch am Typ.
         guard SystemLanguageModel.default.isAvailable else { return nil }
@@ -61,9 +61,9 @@ private final class ToolBox: @unchecked Sendable {
     private let confirm: @Sendable (ConfirmRequest) async -> Bool
 
     init(fileTools: FileTools, backupDir: URL,
-         onCard: @Sendable (ActionCard) -> Void,
-         onFinding: @Sendable (Finding) -> Void,
-         confirm: @Sendable (ConfirmRequest) async -> Bool) {
+         onCard: @escaping @Sendable (ActionCard) -> Void,
+         onFinding: @escaping @Sendable (Finding) -> Void,
+         confirm: @escaping @Sendable (ConfirmRequest) async -> Bool) {
         self.fileTools = fileTools; self.backupDir = backupDir
         self.onCard = onCard; self.onFinding = onFinding; self.confirm = confirm
     }
