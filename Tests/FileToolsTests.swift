@@ -1,3 +1,4 @@
+import UIKit
 import XCTest
 @testable import Hugin
 
@@ -45,5 +46,71 @@ final class FileToolsTests: XCTestCase {
         XCTAssertTrue(entries.contains { $0.name == "sub" && $0.isFolder && $0.relPath == "Doku/sub" })
         XCTAssertTrue(entries.contains { $0.name == "a.txt" && $0.byteSize == 5 })
         XCTAssertThrowsError(try tools.list(folder: "Doku/gibtsnicht")) { XCTAssertEqual($0 as? FileError, .notFound) }
+    }
+
+    func testReadText() throws {
+        try "hello".write(to: tmp.appendingPathComponent("a.txt"), atomically: true, encoding: .utf8)
+        XCTAssertEqual(try tools.read("Doku/a.txt"), "hello")
+    }
+
+    func testReadGrosseDateiWirdAbgeschnitten() throws {
+        let big = String(repeating: "x", count: 300_000)
+        try big.write(to: tmp.appendingPathComponent("big.txt"), atomically: true, encoding: .utf8)
+        let out = try tools.read("Doku/big.txt")
+        XCTAssertLessThanOrEqual(out.count, 200_200) // Inhalt + Hinweistext
+        XCTAssertTrue(out.contains("abgeschnitten"))
+    }
+
+    func testReadPDF() throws {
+        let data = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: 200, height: 200)).pdfData { ctx in
+            ctx.beginPage()
+            "Rechnung 123".draw(at: .zero, withAttributes: [.font: UIFont.systemFont(ofSize: 12)])
+        }
+        try data.write(to: tmp.appendingPathComponent("r.pdf"))
+        XCTAssertTrue(try tools.read("Doku/r.pdf").contains("Rechnung 123"))
+    }
+
+    func testReadNichtUnterstuetzt() throws {
+        try Data([0xFF]).write(to: tmp.appendingPathComponent("b.bin"))
+        XCTAssertThrowsError(try tools.read("Doku/b.bin")) { XCTAssertEqual($0 as? FileError, .unsupportedFormat) }
+    }
+
+    func testReadOrdnerWirftIsFolder() throws {
+        try FileManager.default.createDirectory(at: tmp.appendingPathComponent("sub"), withIntermediateDirectories: true)
+        XCTAssertThrowsError(try tools.read("Doku/sub")) { XCTAssertEqual($0 as? FileError, .isFolder) }
+    }
+
+    func testPDFOhneTextlayer() throws {
+        let data = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: 100, height: 100)).pdfData { ctx in
+            ctx.beginPage()
+            ctx.fill(CGRect(x: 0, y: 0, width: 50, height: 50))   // nur Grafik, kein Text
+        }
+        try data.write(to: tmp.appendingPathComponent("leer.pdf"))
+        XCTAssertThrowsError(try tools.read("Doku/leer.pdf")) { XCTAssertEqual($0 as? FileError, .unsupportedFormat) }
+    }
+
+    func testUmlauteUndEmoji() throws {
+        let name = "Rechnung Ä-ö-ü 🧾.md"
+        try "Inhalt".write(to: tmp.appendingPathComponent(name), atomically: true, encoding: .utf8)
+        XCTAssertEqual(try tools.read("Doku/\(name)"), "Inhalt")
+        // Rename mit Umlauten folgt in Task 7 – hier nur read
+    }
+
+    func testSearch() throws {
+        try "Rechnung 4711".write(to: tmp.appendingPathComponent("r1.md"), atomically: true, encoding: .utf8)
+        try "x".write(to: tmp.appendingPathComponent("anders.txt"), atomically: true, encoding: .utf8)
+        let byName = try tools.search(nameContains: "4711", contentContains: nil)
+        XCTAssertEqual(byName.map(\.name), ["r1.md"])
+        let byContent = try tools.search(nameContains: "", contentContains: "4711")
+        XCTAssertEqual(byContent.map(\.name), ["r1.md"])
+    }
+
+    func testListDeterministischUndOrdnerOhneGroesse() throws {
+        try "b".write(to: tmp.appendingPathComponent("b.txt"), atomically: true, encoding: .utf8)
+        try "a".write(to: tmp.appendingPathComponent("a.txt"), atomically: true, encoding: .utf8)
+        try FileManager.default.createDirectory(at: tmp.appendingPathComponent("sub"), withIntermediateDirectories: true)
+        let entries = try tools.list(folder: "Doku")
+        XCTAssertEqual(entries.map(\.name), ["a.txt", "b.txt", "sub"])
+        XCTAssertEqual(entries.first { $0.isFolder }?.byteSize, nil)   // Ordner ohne Größe (Ruling R8)
     }
 }
