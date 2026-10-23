@@ -9,7 +9,7 @@ jobs:
   build-test-ipa:
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: XcodeGen installieren
         run: brew install xcodegen
       - name: Projekt generieren
