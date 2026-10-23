@@ -66,7 +66,7 @@ struct FlugbahnGrafik: View {
                           control1: CGPoint(x: size.width * 0.23, y: -size.height * 0.11),
                           control2: CGPoint(x: size.width * 0.46, y: size.height * 0.89))
             ctx.stroke(path, with: .color(HuginColor.glut.opacity(0.55)),
-                       style: StrokeStyle(lineWidth: 1.5, dash: [2, 7], lineCap: .round))
+                       style: StrokeStyle(lineWidth: 1.5, lineCap: .round, dash: [2, 7]))
             ctx.fill(Path(ellipseIn: CGRect(x: size.width - 8, y: size.height * 0.49 - 2.5,
                                            width: 5, height: 5)),
                      with: .color(HuginColor.glut.opacity(0.7)))
