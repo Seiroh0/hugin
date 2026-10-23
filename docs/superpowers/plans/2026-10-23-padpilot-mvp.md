@@ -614,7 +614,7 @@ struct FileTools: Sendable {
         let name = "Rechnung Ä-ö-ü 🧾.md"
         try "Inhalt".write(to: tmp.appendingPathComponent(name), atomically: true, encoding: .utf8)
         XCTAssertEqual(try tools.read("Doku/\(name)"), "Inhalt")
-        XCTAssertEqual(try tools.rename("Doku/\(name)", to: "Neu-Ä.md"), "Doku/Neu-Ä.md")
+        // Rename mit Umlauten folgt in Task 7 (testRenameMitUmlauten) – dort erst implementiert
     }
 ```
 - [ ] **Schritt 2: Implementierung (in FileTools.swift ergänzen)**
@@ -665,6 +665,7 @@ struct FileTools: Sendable {
     }
 ```
 Zusätzlich `import PDFKit` am Dateikopf.
+Zusätzlich in `Tests/FileToolsTests.swift` den Import `import UIKit` ergänzen (UIGraphicsPDFRenderer/UIFont).
 - [ ] **Schritt 3: Commit + Push + CI grün** – `git commit -m "feat: read mit PDF/Truncierung und rekursive Suche"`
 - [ ] **Schritt 4: Review-Fokus** – Riesendatei-Truncation durch `testReadGrosseDateiWirdAbgeschnitten` getestet.
 
@@ -706,6 +707,12 @@ Zusätzlich `import PDFKit` am Dateikopf.
         XCTAssertEqual(try tools.rename("Doku/a.txt", to: "b.txt"), "Doku/b.txt")
         XCTAssertEqual(try tools.move("Doku/b.txt", toFolder: "Doku/sub"), "Doku/sub/b.txt")
         XCTAssertThrowsError(try tools.rename("Doku/sub/b.txt", to: "../c.txt")) { XCTAssertEqual($0 as? FileError, .outsideSandbox) }
+    }
+
+    func testRenameMitUmlauten() throws {
+        let name = "Rechnung Ä-ö-ü 🧾.md"
+        try "Inhalt".write(to: tmp.appendingPathComponent(name), atomically: true, encoding: .utf8)
+        XCTAssertEqual(try tools.rename("Doku/\(name)", to: "Neu-Ä.md"), "Doku/Neu-Ä.md")
     }
 ```
 - [ ] **Schritt 2: Implementierung (ergänzen)**
@@ -1268,10 +1275,11 @@ private final class ToolBox: @unchecked Sendable {
     @GenerableTool(description: "Erstellt/überschreibt eine Datei. Vor Überschreiben wird der Nutzer gefragt und ein Backup erstellt.")
     func writeFile(path: String, content: String) async -> String {
         do {
-            if fileTools.resolve(path).map(FileManager.default.fileExists(atPath:)) == true {
+            let exists = fileTools.resolve(path).map { FileManager.default.fileExists(atPath: $0.path) } ?? false
+            if exists {
                 guard await confirm("Datei '\(path)' überschreiben?") else { return "Nutzer hat Überschreiben abgelehnt." }
             }
-            if let card = try fileTools.write(path, content: content, overwrite: true, backupDir: backupDir) {
+            if let card = try fileTools.write(path, content: content, overwrite: exists, backupDir: backupDir) {
                 onCard(card)
             }
             onCard(ActionCard(id: UUID(), kind: .write, title: "Datei geschrieben",
@@ -1313,7 +1321,7 @@ private final class ToolBox: @unchecked Sendable {
 - Test: `Tests/AgentRunnerTests.swift`
 
 **Interfaces:**
-- Consumes: FileTools, ModelProvider, ActionCard, ChatMessage. Produces: `struct AgentRunner: Sendable` mit `init(provider:, fileTools:, backupDir:, onCard: @Sendable (ActionCard) -> Void, confirm: @Sendable (String) async -> Bool)`, `static let systemPrompt`, `static let toolSpecs: [ToolSpec]`, `func run(userText: String, prior: [ProviderMessage]) async throws -> RunResult`, `enum RunResult { completed(text:, cards:), limitReached(text:, cards:) }`, `static let maxSteps = 15` (zählt **Werkzeugaufrufe**, nicht Runden; `write_file` auf existierende Datei fragt **immer** nach Bestätigung – das LLM-Argument `overwrite` wird ignoriert)
+- Consumes: FileTools, ModelProvider, ActionCard, ChatMessage. Produces: `struct AgentRunner: Sendable` mit `init(provider:, fileTools:, backupDir:, onCard: @Sendable (ActionCard) -> Void, confirm: @Sendable (String) async -> Bool)`, `static let systemPrompt`, `static let toolSpecs: [ToolSpec]`, `func run(userText: String, prior: [ProviderMessage]) async throws -> RunResult`, `enum RunResult { completed(text:, cards:), limitReached(text:, cards:) }`, `static let maxSteps = 15` (zählt **Werkzeugaufrufe**, nicht Runden; der letzte Batch wird gekappt, damit 15 ein hartes Cap bleibt; `write_file` auf existierende Datei fragt **immer** nach Bestätigung – das LLM-Argument `overwrite` wird ignoriert), `final class CardBuffer: @unchecked Sendable` (Mutex-basierter Kartenspeicher, synchrone `add`/`all` – kein Actor, damit die synchrone `onCard`-Closure funktioniert; Task 13 nutzt ihn mit)
 
 - [ ] **Schritt 1: Tests schreiben**
 ```swift
@@ -1334,17 +1342,12 @@ final class AgentRunnerTests: XCTestCase {
     override func tearDown() { try? FileManager.default.removeItem(at: tmp) }
 
     private func makeRunner(script: [ProviderResponse], confirm: @Sendable @escaping (String) async -> Bool = { _ in true })
-        -> (AgentRunner, FakeProvider, recorder: ActorCards) {
-        let cards = ActorCards()
+        -> (AgentRunner, FakeProvider, CardBuffer) {
+        let cards = CardBuffer()
         let fake = FakeProvider(script: script)
         let runner = AgentRunner(provider: fake, fileTools: tools, backupDir: backup,
                                  onCard: { cards.add($0) }, confirm: confirm)
         return (runner, fake, cards)
-    }
-
-    actor ActorCards {
-        var all: [ActionCard] = []
-        func add(_ c: ActionCard) { all.append(c) }
     }
 
     func testLoopKomplett() async throws {
@@ -1357,8 +1360,7 @@ final class AgentRunnerTests: XCTestCase {
         let result = try await runner.run(userText: "Liste Dateien", prior: [])
         guard case .completed(let text, _) = result else { return XCTFail("completed erwartet") }
         XCTAssertEqual(text, "Fertig: 1 Datei")
-        let all = await cards.all
-        XCTAssertTrue(all.contains { $0.kind == .list })
+        XCTAssertTrue(cards.all.contains { $0.kind == .list })
     }
 
     func testWerkzeuglimit() async throws {
@@ -1382,8 +1384,7 @@ final class AgentRunnerTests: XCTestCase {
         guard case .completed(let text, _) = result else { return XCTFail() }
         XCTAssertEqual(text, "Ok, nicht geschrieben.")
         XCTAssertEqual(try tools.read("Doku/n.txt"), "a")
-        let all = await cards.all
-        XCTAssertTrue(all.contains { $0.kind == .hint })  // Ablehnung als Hinweis
+        XCTAssertTrue(cards.all.contains { $0.kind == .hint })  // Ablehnung als Hinweis
     }
 
     func testOverwriteTrueTrotzdemGate() async throws {
@@ -1504,9 +1505,11 @@ struct AgentRunner: Sendable {
             if resp.toolCalls.isEmpty {
                 return .completed(text: resp.text, cards: produced)
             }
-            performedCalls += resp.toolCalls.count
-            messages.append(.assistant(text: resp.text, toolCalls: resp.toolCalls))
-            for call in resp.toolCalls {
+            // Batch kappen, damit das Aufruf-Limit ein hartes Cap bleibt
+            let batch = Array(resp.toolCalls.prefix(Self.maxSteps - performedCalls))
+            performedCalls += batch.count
+            messages.append(.assistant(text: resp.text, toolCalls: batch))
+            for call in batch {
                 let (obs, cards) = await execute(call)
                 produced += cards
                 messages.append(.toolResult(id: call.id, content: obs))
@@ -1576,6 +1579,14 @@ struct AgentRunner: Sendable {
 
 private extension String {
     func ifEmpty(_ other: String?) -> String? { isEmpty ? other : self }
+}
+
+/// Karten-Speicher ohne async – Mutex statt Actor, damit synchrone onCard-Closures nutzbar bleiben
+/// (import Synchronization; falls im Ziel-SDK nicht verfügbar: DispatchQueue-Lock als Ersatz)
+final class CardBuffer: @unchecked Sendable {
+    private let mutex = Mutex<[ActionCard]>([])
+    func add(_ card: ActionCard) { mutex.withLock { $0.append(card) } }
+    var all: [ActionCard] { mutex.withLock { $0 } }
 }
 ```
 Hinweis: `write` erhält `overwrite: exists`, weil der Bestätigungsfall oben bereits abgehandelt wurde; `confirm` ist async, weil die UI-Brücke (Task 13) auf den Nutzer-Dialog wartet.
@@ -1654,9 +1665,15 @@ final class ChatViewModelTests: XCTestCase {
         ])
         let vm = ChatViewModel(security: sec, store: try PadPilotStore(inMemory: true), makeProvider: { _ in fake })
         vm.run("schreibe")
-        while vm.pendingConfirmation == nil { await Task.yield() }   // Run wartet auf Bestätigung
-        XCTAssertTrue(vm.pendingConfirmation?.prompt.contains("exists.txt") == true)
-        vm.resolveConfirmation(false)
+        var tries = 0
+        while vm.pendingConfirmation == nil && tries < 500 {   // begrenzter Wait statt Endlos-Schleife
+            try? await Task.sleep(for: .milliseconds(10)); tries += 1
+        }
+        XCTAssertNotNil(vm.pendingConfirmation, "Bestätigungsdialog kam nicht (innerhalb von 5 s)")
+        if let conf = vm.pendingConfirmation {
+            XCTAssertTrue(conf.prompt.contains("exists.txt"))
+            vm.resolveConfirmation(false)
+        }
         await vm.waitForRunEnd()
         XCTAssertEqual(vm.messages.last?.text, "fertig")
         XCTAssertEqual(try String(contentsOf: tmp.appendingPathComponent("exists.txt"), encoding: .utf8), "a")
@@ -1718,9 +1735,9 @@ final class ChatViewModel {
 
     private let security: SecurityStore
     private let store: PadPilotStore?
-    private let makeProvider: (Mode) throws -> ModelProvider
+    private var makeProvider: ((Mode) throws -> ModelProvider)!  // IUO: Zuweisung NACH allen anderen Properties (self-Capture erst dann erlaubt)
     private var runTask: Task<Void, Never>?
-    private var activeCards: ActorCardCollector?
+    private var activeCards: CardBuffer?
 
     init(security: SecurityStore = SecurityStore(),
          store: PadPilotStore? = nil,
@@ -1831,7 +1848,7 @@ final class ChatViewModel {
     }
 
     private func runAgent(provider: ModelProvider, text: String, prior: [ProviderMessage]) async throws -> (String, [ActionCard]) {
-        let cards = ActorCardCollector()
+        let cards = CardBuffer()
         activeCards = cards
         let runner = AgentRunner(provider: provider, fileTools: fileTools(), backupDir: backupDir,
                                  onCard: { cards.add($0) }, confirm: confirmBridge)
@@ -1841,7 +1858,7 @@ final class ChatViewModel {
         case .completed(let t, _): finalText = t
         case .limitReached(let t, _): finalText = t
         }
-        return (finalText, await cards.all)
+        return (finalText, cards.all)
     }
 
     private func resolveProvider(mode: Mode) throws -> (ModelProvider, ActionCard?) {
@@ -1895,13 +1912,9 @@ final class ChatViewModel {
         pendingConfirmation = nil
     }
 }
-
-actor ActorCardCollector {
-    var all: [ActionCard] = []
-    func add(_ c: ActionCard) { all.append(c) }
-}
 ```
-Hinweis: `ActorCardCollector` ist ein `actor` – Kartenzuwachs aus Werkzeug-Rückrufen ist datenrennen-sicher (Swift 6 Strict Concurrency).
+
+Hinweis: `CardBuffer` kommt aus Task 12 (Mutex statt Actor) – `onCard` bleibt synchron, `activeCards` vom Typ `CardBuffer?`.
 - [ ] **Schritt 3: Commit + Push + CI grün** – `git commit -m "feat: ChatViewModel mit Auto-Eskalation und Bestätigungsbrücke"`
 - [ ] **Schritt 4: Review-Fokus** – Claude 401/offline → Nutzer-Meldung + on-device bleibt nutzbar (`testAutoEskaliertBeiUnavailable` deckt Eskalation ab; Fehlertext-Mapping prüfen).
 
@@ -2119,5 +2132,5 @@ struct ChatView: View {
 1. **Spec-Abdeckung:** Chat ✓ (T13/14), Ordner-Freigabe ✓ (T8/14), Datei-Werkzeuge ✓ (T5–7), kein Löschen ✓ (kein Werkzeug), Überschreiben nur mit Bestätigung + Backup ✓ (T7/12/13/14), Aktionskarten ✓ (T4/12/14), Hybrid-KI + Auto-Eskalation ✓ (T11/13), Verlauf ✓ (T9/13), Keychain ✓ (T8/14), CI/IPA ✓ (T1/14), Roadmap-Phasen außerhalb des MVP ✓.
 2. **Platzhalter:** keiner; bewusste Stellschrauben (Runner-Image, Simulator-Name, FM-Signaturen) sind als solche markiert und haben Prüf-Schritte.
 3. **Typ-Konsistenz:** `FileTools.write` heißt überall gleich; `Confirmation.continuation` (T13) ↔ ChatView `.alert` (T14); `AgentRunner.confirm` ist `(String) -> Bool` (VM macht `await MainActor.run`-Brücke) – konsistent zwischen T12/T13.
-4. **Review-Fokus:** Pfad-Flucht inkl. Symlink/Percent-Encoding (T5), Überschreiben inkl. Gate-Bypass über `overwrite:true` (T7/12/13), Werkzeug-Limit als Aufrufzähler (T12), Bookmark-Verfall mit Zähler + Neu-Freigabe-Hinweis (T8/13), 401/offline + Auto-Rückfall on-device (T10/13), Verlauf überlebt App-Neustart (T13) – jeweils mit Test verankert.
+4. **Review-Fokus:** Pfad-Flucht inkl. Symlink/Percent-Encoding (T5), Überschreiben inkl. Gate-Bypass über `overwrite:true` (T7/12/13), Werkzeug-Limit als harter Aufruf-Zähler (T12), Bookmark-Verfall mit Zähler + Neu-Freigabe-Hinweis (T8/13), 401/offline + Auto-Rückfall on-device (T10/13), Verlauf überlebt App-Neustart (T13), Doppel-Run-Blockierung (T13) – jeweils mit Test verankert.
 ```
