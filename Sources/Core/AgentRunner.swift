@@ -130,13 +130,14 @@ struct AgentRunner: Sendable {
             case "list_files":
                 let entries = try fileTools.list(folder: str("folder"))
                 card(.list, "Ordner gelistet", str("folder"))
-                return (entries.isEmpty ? "Ordner ist leer."
-                        : entries.map { $0.isFolder ? "[Ordner] \($0.relPath)" : $0.relPath }.joined(separator: "\n"), cards)
+                let joined = entries.map { $0.isFolder ? "[Ordner] \($0.relPath)" : $0.relPath }.joined(separator: "\n")
+                return (entries.isEmpty ? "Ordner ist leer." : joined, cards)
             case "search_files":
                 let hits = try fileTools.search(nameContains: str("nameContains"),
                                                contentContains: str("contentContains").ifEmpty(nil))
                 card(.search, "Suche: '\(str("nameContains"))'", "\(hits.count) Treffer")
-                return (hits.map(\.relPath).joined(separator: "\n").ifEmpty("Keine Treffer."), cards)
+                let joined = hits.map(\.relPath).joined(separator: "\n")
+                return (joined.isEmpty ? "Keine Treffer." : joined, cards)
             case "read_file":
                 let text = try fileTools.read(str("path"))
                 card(.read, "Datei gelesen", str("path"))
