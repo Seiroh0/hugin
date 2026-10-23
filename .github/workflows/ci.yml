@@ -1,0 +1,25 @@
+name: CI
+on: [push]
+jobs:
+  build-test-ipa:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: XcodeGen installieren
+        run: brew install xcodegen
+      - name: Projekt generieren
+        run: xcodegen generate
+      - name: Verfügbare Simulatoren (Debug-Hilfe)
+        run: xcrun simctl list devices available
+      - name: Tests
+        run: xcodebuild -project Hugin.xcodeproj -scheme Hugin -destination 'platform=iOS Simulator,name=iPad (A16) Simulator' test
+      - name: Unsigned IPA bauen
+        run: |
+          xcodebuild -project Hugin.xcodeproj -scheme Hugin -configuration Release -sdk iphoneos archive -archivePath build/Hugin.xcarchive
+          mkdir -p build/Payload
+          cp -R "build/Hugin.xcarchive/Products/Applications/Hugin.app" build/Payload/
+          cd build && zip -r Hugin-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Hugin-unsigned
+          path: build/Hugin-unsigned.ipa

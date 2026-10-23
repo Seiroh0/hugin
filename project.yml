@@ -1,0 +1,37 @@
+name: Hugin
+options:
+  bundleIdPrefix: com.hugin
+  deploymentTarget:
+    iOS: "26.0"
+settings:
+  base:
+    CODE_SIGNING_ALLOWED: "NO"
+    CODE_SIGN_IDENTITY: ""
+    GENERATE_INFOPLIST_FILE: "YES"
+targets:
+  Hugin:
+    type: application
+    platform: iOS
+    sources:
+      - Sources/App
+      - Sources/Core
+      - Sources/Store
+      - Sources/UI
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.hugin.app
+        INFOPLIST_KEY_CFBundleDisplayName: Hugin
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationPortrait
+        TARGETED_DEVICE_FAMILY: "2"
+  HuginTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests]
+    dependencies:
+      - target: Hugin
+schemes:
+  Hugin:
+    build:
+      targets: { Hugin: all }
+    test:
+      targets: [HuginTests]
