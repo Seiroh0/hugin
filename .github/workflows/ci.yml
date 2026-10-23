@@ -19,7 +19,7 @@ jobs:
           mkdir -p build/Payload
           cp -R "build/Hugin.xcarchive/Products/Applications/Hugin.app" build/Payload/
           cd build && zip -r Hugin-unsigned.ipa Payload
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Hugin-unsigned
           path: build/Hugin-unsigned.ipa
