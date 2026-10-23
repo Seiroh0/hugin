@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="de"><head>
+<meta charset="utf-8">
+<title>Hugin â€“ Wisp-ZustÃ¤nde</title>
+<script src="cd0d0b41-3d54-4a5d-91c8-cce451dfbed7"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>/* vietnamese */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHUEj6M7.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHQEj6M7.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("05fd70cf-5cd9-4c66-a32c-b49c7fb49004") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHUEj6M7.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHQEj6M7.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("05fd70cf-5cd9-4c66-a32c-b49c7fb49004") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHUEj6M7.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHQEj6M7.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("05fd70cf-5cd9-4c66-a32c-b49c7fb49004") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHUEj6M7.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHQEj6M7.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("05fd70cf-5cd9-4c66-a32c-b49c7fb49004") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1iIq129k.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1isq129k.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1iAq129k.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1iEq129k.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1i8q1w.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwl1FgtIU.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwlRFgtIU.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwl9FgtIU.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwl5FgtIU.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwlBFgg.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9CfjOCX1hbuyalUrK439vCgYhCFpY.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9CfjOCX1hbuyalUrK439vCgIhCFpY.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("919b2e9c-e925-4f83-8da6-ed17d86aa82c") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9CfjOCX1hbuyalUrK439vCgYhCFpY.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9CfjOCX1hbuyalUrK439vCgIhCFpY.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("919b2e9c-e925-4f83-8da6-ed17d86aa82c") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9VfjOCX1hbuyalUrK49dLafXjalZCsZBsgBgbCJYQraA.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9VfjOCX1hbuyalUrK49dLafXjalZCsZBsgBgbDJYQraA.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9VfjOCX1hbuyalUrK49dLafXjalZCsZBsgBgbNJYQ.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+body{margin:0;background:#0E0F12}
+*{box-sizing:border-box}
+a{color:#EE9A3C}a:hover{color:#F7BE6E}
+@keyframes breathe{0%,100%{transform:scale(.88);opacity:.85}50%{transform:scale(1.06);opacity:1}}
+@keyframes halo{0%,100%{opacity:.5;transform:scale(.88)}50%{opacity:1;transform:scale(1.18)}}
+@keyframes drift{0%,100%{transform:translate(0,0)}25%{transform:translate(3px,-2px)}50%{transform:translate(0,-4px)}75%{transform:translate(-3px,-2px)}}
+@keyframes orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes glide{0%{transform:translateX(-96px);opacity:0}12%{opacity:1}58%{transform:translateX(96px);opacity:1}72%{transform:translateX(96px);opacity:0}100%{transform:translateX(-96px);opacity:0}}
+@keyframes emberOut{0%,40%{opacity:1}50%,90%{opacity:0}100%{opacity:1}}
+@keyframes frostIn{0%,40%{opacity:0}50%,90%{opacity:1}100%{opacity:0}}
+@keyframes flare{0%,40%{opacity:0;transform:scale(.4)}46%{opacity:.95;transform:scale(1.7)}58%{opacity:0;transform:scale(2.4)}100%{opacity:0;transform:scale(2.4)}}
+@keyframes ripple{0%{transform:scale(.6);opacity:.7}100%{transform:scale(3.4);opacity:0}}
+@keyframes flicker{0%,100%{opacity:1;transform:translateY(0)}7%{opacity:.35}10%{opacity:.95}33%{opacity:.8;transform:translateY(2px)}36%{opacity:.25}40%{opacity:.9}62%{opacity:.7}65%{opacity:.3}70%{opacity:1;transform:translateY(0)}}
+@keyframes sink{0%,35%{transform:scale(1);opacity:1}70%{transform:scale(.32);opacity:.9}100%{transform:scale(.32);opacity:0}}
+@keyframes haloOut{0%,35%{opacity:1}70%,100%{opacity:0}}
+@keyframes nodeIn{0%,55%{opacity:0}75%,92%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion: reduce){.wisp,.wisp *{animation:none !important}}
+</style>
+</helmet>
+<div style="width: 1400px; height: 900px; padding: 56px; background: #0E0F12; color: #ECE6D9; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; gap: 28px">
+  <div style="display: flex; align-items: flex-end; gap: 40px">
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 10px">
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: .14em; color: #9A958B">STATUS-SYSTEM</span>
+      <h1 style="margin: 0; font-size: 46px; font-weight: 600; letter-spacing: -0.03em; line-height: 1">Ein Licht, sieben ZustÃ¤nde</h1>
+    </div>
+    <p style="margin: 0; max-width: 420px; font-family: 'Geist', system-ui, sans-serif; font-style: normal; font-size: 22px; line-height: 1.3; color: #ECE6D9; letter-spacing: -0.01em">Die Farbe sagt, wer denkt. Die Bewegung sagt, was gerade passiert.</p>
+  </div>
+
+  <div style="flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 16px">
+
+    <article style="background: #131418; border: 1px solid #23252B; border-radius: 20px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px">
+      <div style="height: 132px; display: flex; align-items: center; justify-content: center">
+        <div class="wisp" aria-hidden="true" style="position: relative; width: 24px; height: 24px; animation: drift 7s ease-in-out infinite">
+          <span style="position: absolute; left: -36px; top: -36px; right: -36px; bottom: -36px; border-radius: 50%; background: radial-gradient(circle, rgba(238,154,60,.42) 0%, rgba(238,154,60,0) 62%); animation: halo 4.2s ease-in-out infinite"></span>
+          <span style="position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 45% 40%, #FFF4E0 0%, #F7BE6E 34%, #EE9A3C 64%, rgba(238,154,60,0) 74%); animation: breathe 4.2s ease-in-out infinite"></span>
+        </div>
+      </div>
+      <h2 style="margin: 0; font-size: 20px; font-weight: 600">Ruhe</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #9A958B; flex: 1">Bereit. Atmet langsam im Eingabefeld und treibt ein wenig.</p>
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #9A958B">Atmen Â· 4,2 s Â· ease-in-out Â· âˆž</span>
+    </article>
+
+    <article style="background: #131418; border: 1px solid #23252B; border-radius: 20px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px">
+      <div style="height: 132px; display: flex; align-items: center; justify-content: center">
+        <div class="wisp" aria-hidden="true" style="position: relative; width: 24px; height: 24px">
+          <span style="position: absolute; left: -36px; top: -36px; right: -36px; bottom: -36px; border-radius: 50%; background: radial-gradient(circle, rgba(238,154,60,.46) 0%, rgba(238,154,60,0) 62%); animation: halo 1.1s ease-in-out infinite"></span>
+          <span style="position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 45% 40%, #FFF4E0 0%, #F7BE6E 34%, #EE9A3C 64%, rgba(238,154,60,0) 74%); animation: breathe 1.1s ease-in-out infinite"></span>
+          <span style="position: absolute; left: -14px; top: -14px; right: -14px; bottom: -14px; animation: orbit 1.4s cubic-bezier(.45,.05,.55,.95) infinite"><span style="position: absolute; left: 50%; top: 0; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: #FFF4E0; box-shadow: 0 0 8px 2px rgba(238,154,60,.8)"></span></span>
+        <span aria-hidden="true" style="position: absolute; left: -24px; top: -24px; right: -24px; bottom: -24px; animation: orbit 2.6s linear infinite reverse"><span style="position: absolute; left: 50%; top: 0; width: 3px; height: 3px; margin-left: -1.5px; border-radius: 50%; background: #F7BE6E; box-shadow: 0 0 6px 2px rgba(247,190,110,.7)"></span></span><span aria-hidden="true" style="position: absolute; left: -8px; top: -8px; right: -8px; bottom: -8px; animation: orbit 0.8s linear infinite"><span style="position: absolute; left: 50%; top: 0; width: 2px; height: 2px; margin-left: -1px; border-radius: 50%; background: #FFF4E0; box-shadow: 0 0 5px 1px rgba(255,244,224,.8)"></span></span><span aria-hidden="true" style="position: absolute; left: -34px; top: -34px; right: -34px; bottom: -34px; transform: rotate(-25deg) scaleY(.38)"><span style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; animation: orbit 3.4s linear infinite"><span style="position: absolute; left: 50%; top: 0; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: #FFD9A0; box-shadow: 0 0 8px 2px rgba(238,154,60,.75)"></span></span></span><span aria-hidden="true" style="position: absolute; left: -30px; top: -30px; right: -30px; bottom: -30px; transform: rotate(40deg) scaleY(.55)"><span style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; animation: orbit 4.8s linear infinite reverse"><span style="position: absolute; left: 50%; top: 0; width: 3px; height: 3px; margin-left: -1.5px; border-radius: 50%; background: #F7BE6E; box-shadow: 0 0 6px 1px rgba(238,154,60,.7)"></span></span></span></div>
+      </div>
+      <h2 style="margin: 0; font-size: 20px; font-weight: 600">Denkt</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #9A958B; flex: 1">Plant den nÃ¤chsten Schritt. Schneller Puls, ein Funke umkreist das Licht.</p>
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #9A958B">Puls 1,1 s Â· 4 Funken Â· 0,8â€“4,8 s Â· gegenlÃ¤ufig</span>
+    </article>
+
+    <article style="background: #131418; border: 1px solid #23252B; border-radius: 20px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px; overflow: hidden">
+      <div style="height: 132px; display: flex; align-items: center; justify-content: center">
+        <div class="wisp" aria-hidden="true" style="position: relative; width: 20px; height: 20px; animation: glide 2.4s cubic-bezier(.2,.8,.2,1) infinite">
+          <span style="position: absolute; right: 50%; top: 9px; width: 110px; height: 2px; border-radius: 1px; background: linear-gradient(90deg, rgba(238,154,60,0), rgba(238,154,60,.7))"></span>
+          <span style="position: absolute; left: -30px; top: -30px; right: -30px; bottom: -30px; border-radius: 50%; background: radial-gradient(circle, rgba(238,154,60,.42) 0%, rgba(238,154,60,0) 62%)"></span>
+          <span style="position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 45% 40%, #FFF4E0 0%, #F7BE6E 34%, #EE9A3C 64%, rgba(238,154,60,0) 74%)"></span>
+        </div>
+      </div>
+      <h2 style="margin: 0; font-size: 20px; font-weight: 600">Fliegt</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #9A958B; flex: 1">FÃ¼hrt ein Werkzeug aus und gleitet mit Lichtspur zum nÃ¤chsten Knoten.</p>
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #9A958B">Gleiten Â· 520 ms Â· (.2, .8, .2, 1)</span>
+    </article>
+
+    <article style="background: #131418; border: 1px solid #23252B; border-radius: 20px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px">
+      <div style="height: 132px; display: flex; align-items: center; justify-content: center">
+        <div class="wisp" aria-hidden="true" style="position: relative; width: 24px; height: 24px">
+          <span style="position: absolute; left: -36px; top: -36px; right: -36px; bottom: -36px; border-radius: 50%; background: radial-gradient(circle, rgba(238,154,60,.42) 0%, rgba(238,154,60,0) 62%); animation: emberOut 3.6s ease-in-out infinite"></span>
+          <span style="position: absolute; left: -36px; top: -36px; right: -36px; bottom: -36px; border-radius: 50%; background: radial-gradient(circle, rgba(190,228,240,.38) 0%, rgba(190,228,240,0) 62%); animation: frostIn 3.6s ease-in-out infinite"></span>
+          <span style="position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 45% 40%, #FFF4E0 0%, #F7BE6E 34%, #EE9A3C 64%, rgba(238,154,60,0) 74%); animation: emberOut 3.6s ease-in-out infinite"></span>
+          <span style="position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 45% 40%, #FFFFFF 0%, #E2F4FA 34%, #BEE4F0 64%, rgba(190,228,240,0) 74%); animation: frostIn 3.6s ease-in-out infinite"></span>
+          <span style="position: absolute; left: -10px; top: -10px; right: -10px; bottom: -10px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.95) 0%, rgba(255,255,255,0) 65%); animation: flare 3.6s cubic-bezier(.3,0,.1,1) infinite"></span>
+        </div>
+      </div>
+      <h2 style="margin: 0; font-size: 20px; font-weight: 600">Ãœbergabe</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #9A958B; flex: 1">Lokal kommt nicht weiter: kurzes Aufflammen, dann Frost. Claude Ã¼bernimmt.</p>
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #9A958B">Aufflammen 180 ms Â· Farbe 600 ms</span>
+    </article>
+
+    <article style="background: #131418; border: 1px solid #23252B; border-radius: 20px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px">
+      <div style="height: 132px; display: flex; align-items: center; justify-content: center">
+        <div class="wisp" aria-hidden="true" style="position: relative; width: 22px; height: 22px">
+          <span style="position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid rgba(236,230,217,.7); animation: ripple 1.6s ease-out infinite"></span>
+          <span style="position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid rgba(236,230,217,.7); animation: ripple 1.6s ease-out .8s infinite"></span>
+          <span style="position: absolute; left: -30px; top: -30px; right: -30px; bottom: -30px; border-radius: 50%; background: radial-gradient(circle, rgba(236,230,217,.3) 0%, rgba(236,230,217,0) 62%)"></span>
+          <span style="position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 45% 40%, #FFFFFF 0%, #F4EFE4 40%, #ECE6D9 66%, rgba(236,230,217,0) 76%)"></span>
+        </div>
+      </div>
+      <h2 style="margin: 0; font-size: 20px; font-weight: 600">Wartet</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #9A958B; flex: 1">Braucht deine BestÃ¤tigung. Ruhiges Licht, Ringe laufen nach auÃŸen.</p>
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #9A958B">Welle Â· 1,6 s Â· ease-out Â· versetzt</span>
+    </article>
+
+    <article style="background: #131418; border: 1px solid #23252B; border-radius: 20px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px">
+      <div style="height: 132px; display: flex; align-items: center; justify-content: center">
+        <div class="wisp" aria-hidden="true" style="position: relative; width: 22px; height: 22px; animation: flicker 2.2s linear infinite">
+          <span style="position: absolute; left: -30px; top: -30px; right: -30px; bottom: -30px; border-radius: 50%; background: radial-gradient(circle, rgba(224,97,63,.4) 0%, rgba(224,97,63,0) 62%)"></span>
+          <span style="position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 45% 40%, #FFE2D6 0%, #F08A6B 36%, #E0613F 66%, rgba(224,97,63,0) 76%)"></span>
+        </div>
+      </div>
+      <h2 style="margin: 0; font-size: 20px; font-weight: 600">Stockt</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #9A958B; flex: 1">Ein Werkzeug ist gescheitert. Unruhiges Flackern, Hugin versucht es selbst neu.</p>
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #9A958B">Flackern Â· unregelmÃ¤ÃŸig Â· 2,2 s</span>
+    </article>
+
+    <article style="background: #131418; border: 1px solid #23252B; border-radius: 20px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px">
+      <div style="height: 132px; display: flex; align-items: center; justify-content: center">
+        <div class="wisp" aria-hidden="true" style="position: relative; width: 24px; height: 24px">
+          <span style="position: absolute; left: 4px; top: 4px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(238,154,60,.8); background: radial-gradient(circle, #EE9A3C 0 2.5px, #131418 3px); animation: nodeIn 3s ease-out infinite"></span>
+          <span style="position: absolute; left: -36px; top: -36px; right: -36px; bottom: -36px; border-radius: 50%; background: radial-gradient(circle, rgba(238,154,60,.42) 0%, rgba(238,154,60,0) 62%); animation: haloOut 3s ease-in infinite"></span>
+          <span style="position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 45% 40%, #FFF4E0 0%, #F7BE6E 34%, #EE9A3C 64%, rgba(238,154,60,0) 74%); animation: sink 3s ease-in infinite"></span>
+        </div>
+      </div>
+      <h2 style="margin: 0; font-size: 20px; font-weight: 600">Fertig</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #9A958B; flex: 1">Das Licht sinkt in den Knoten und verglimmt. Der Punkt bleibt eingraviert.</p>
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #9A958B">Einsinken Â· 700 ms Â· ease-in</span>
+    </article>
+
+    <article style="background: transparent; border: 1px dashed #2E3037; border-radius: 20px; padding: 22px; display: flex; flex-direction: column; gap: 12px">
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: .14em; color: #9A958B">FARBE = WER DENKT</span>
+      <sc-for list="{{legend}}" as="l" hint-placeholder-count="4">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <span aria-hidden="true" style="width: 12px; height: 12px; border-radius: 50%; flex: none; background: {{l.hex}}; box-shadow: 0 0 10px 2px {{l.glow}}"></span>
+          <span style="font-size: 15px; font-weight: 600; width: 72px">{{l.name}}</span>
+          <span style="font-size: 13px; color: #9A958B">{{l.role}}</span>
+        </div>
+      </sc-for>
+      <div style="height: 1px; background: #23252B; margin: 4px 0"></div>
+      <p style="margin: 0; font-size: 13px; line-height: 1.45; color: #9A958B">Bewegung reduzieren: keine Wege, nur Farbe und sanftes Ãœberblenden.</p>
+    </article>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      legend: [
+        { name: 'Glut', role: 'lokal auf dem iPad', hex: '#EE9A3C', glow: 'rgba(238,154,60,.45)' },
+        { name: 'Frost', role: 'Claude in der Cloud', hex: '#BEE4F0', glow: 'rgba(190,228,240,.4)' },
+        { name: 'Knochen', role: 'wartet auf dich', hex: '#ECE6D9', glow: 'rgba(236,230,217,.3)' },
+        { name: 'Rost', role: 'etwas hakt', hex: '#E0613F', glow: 'rgba(224,97,63,.4)' }
+      ]
+    };
+  }
+}
+</script>
+
+
+</body></html>

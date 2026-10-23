@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="de"><head>
+<meta charset="utf-8">
+<title>Hugin â€“ Start und Modellwahl</title>
+<script src="bc3d8433-f5e0-4b80-b333-305886b05cfb"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwRGFWfOw.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwYGFWfOw.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwTGFWfOw.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwSGFWfOw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("267e6be0-ea8b-46e0-97e4-7f9df228c59b") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwRGFWfOw.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwYGFWfOw.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwTGFWfOw.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwSGFWfOw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("267e6be0-ea8b-46e0-97e4-7f9df228c59b") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwRGFWfOw.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwYGFWfOw.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwTGFWfOw.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwSGFWfOw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("267e6be0-ea8b-46e0-97e4-7f9df228c59b") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwRGFWfOw.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwYGFWfOw.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwTGFWfOw.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwSGFWfOw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("267e6be0-ea8b-46e0-97e4-7f9df228c59b") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrodmgPn.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrMdmgPn.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* symbols2 */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFg08vz7ehw.woff2) format('woff2');
+  unicode-range: U+2000-2001, U+2004-2008, U+200A, U+23B8-23BD, U+2500-259F;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrgdmgPn.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrkdmgPn.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("c7ea0b05-80fb-49b2-bded-3c6f3f37376e") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrodmgPn.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrMdmgPn.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* symbols2 */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFg08vz7ehw.woff2) format('woff2');
+  unicode-range: U+2000-2001, U+2004-2008, U+200A, U+23B8-23BD, U+2500-259F;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrgdmgPn.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrkdmgPn.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("c7ea0b05-80fb-49b2-bded-3c6f3f37376e") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+body{margin:0;background:#0E0F12}
+*{box-sizing:border-box}
+a{color:#EE9A3C}a:hover{color:#F7BE6E}
+button{font:inherit;color:inherit}
+textarea::placeholder{color:#8E8A80}
+textarea:focus{outline:none}
+button:focus-visible,textarea:focus-visible{outline:2px solid #ECE6D9;outline-offset:2px}
+@keyframes breathe{0%,100%{transform:scale(.88);opacity:.85}50%{transform:scale(1.06);opacity:1}}
+@keyframes halo{0%,100%{opacity:.5;transform:scale(.88)}50%{opacity:1;transform:scale(1.18)}}
+@keyframes drift{0%,100%{transform:translate(0,0)}25%{transform:translate(3px,-2px)}50%{transform:translate(0,-4px)}75%{transform:translate(-3px,-2px)}}
+@media (prefers-reduced-motion: reduce){.wisp,.wisp *{animation:none !important}}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; display: flex; background: #0E0F12; color: #ECE6D9; font-family: 'Geist', system-ui, sans-serif; overflow: hidden">
+
+  <nav aria-label="Seitenleiste" style="width: 260px; flex: none; background: #121317; border-right: 1px solid #23252B; padding: 28px 20px; display: flex; flex-direction: column; gap: 26px">
+    <div style="font-size: 30px; font-weight: 600; letter-spacing: -0.045em; line-height: 1; padding-left: 8px">hug<span style="position: relative; display: inline-block">Ä±<span aria-hidden="true" style="position: absolute; left: 50%; top: .07em; width: .16em; height: .16em; margin-left: -.08em; border-radius: 50%; background: radial-gradient(circle at 45% 40%, #FFF8EC 0%, #F7BE6E 40%, #EE9A3C 100%); box-shadow: 0 0 8px 2px rgba(238,154,60,.45)"></span></span>n</div>
+
+    <button type="button" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #3A3D45; background: transparent; font-size: 15px; font-weight: 500; cursor: pointer">
+      <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+      Neuer Auftrag
+    </button>
+
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #9A958B; padding: 0 12px 8px">Freigaben</span>
+      <sc-for list="{{folders}}" as="f" hint-placeholder-count="3">
+        <button type="button" style="display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border-radius: 10px; border: none; background: transparent; font-size: 15px; text-align: left; cursor: pointer">
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9A958B" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 7.5a2 2 0 0 1 2-2h3.6l2 2.2h7.4a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"></path></svg>
+          <span style="flex: 1">{{f.name}}</span>
+          <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #9A958B">{{f.count}}</span>
+        </button>
+      </sc-for>
+      <button type="button" style="display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border-radius: 10px; border: none; background: transparent; font-size: 14px; color: #9A958B; text-align: left; cursor: pointer">
+        <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 6v12M6 12h12"></path></svg>
+        Ordner freigeben
+      </button>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #9A958B; padding: 0 12px 8px">Munin Â· Erinnerung</span>
+      <sc-for list="{{history}}" as="h" hint-placeholder-count="3">
+        <button type="button" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 52px; padding: 8px 12px; border-radius: 10px; border: none; background: transparent; text-align: left; cursor: pointer">
+          <span style="font-size: 14px; line-height: 1.3">{{h.title}}</span>
+          <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #9A958B">{{h.when}}</span>
+        </button>
+      </sc-for>
+    </div>
+
+    <button type="button" style="margin-top: auto; display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border-radius: 10px; border: none; background: transparent; font-size: 14px; color: #9A958B; text-align: left; cursor: pointer">
+      <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>
+      Einstellungen
+    </button>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center">
+    <div style="width: 640px; display: flex; flex-direction: column; position: relative">
+
+      <div class="wisp" aria-hidden="true" style="position: relative; width: 26px; height: 26px; margin: 0 0 34px 8px; animation: drift 7s ease-in-out infinite">
+        <span style="position: absolute; left: -34px; top: -34px; right: -34px; bottom: -34px; border-radius: 50%; background: {{wispHalo}}; animation: halo 4.2s ease-in-out infinite"></span>
+        <span style="position: absolute; inset: 0; border-radius: 50%; background: {{wispCore}}; animation: breathe 4.2s ease-in-out infinite"></span>
+      </div><svg aria-hidden="true" width="260" height="70" sc-camel-view-box="0 0 260 70" style="position: absolute; left: 40px; top: 4px"><path d="M2 30 C60 -8 120 62 180 28 S240 18 258 34" fill="none" stroke="#EE9A3C" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round" opacity=".55"></path><circle cx="258" cy="34" r="2.5" fill="#EE9A3C" opacity=".7"></circle></svg>
+
+      <h1 style="margin: 0; font-family: 'Geist', system-ui, sans-serif; font-style: normal; font-weight: 400; font-size: 56px; line-height: 1.1; letter-spacing: -0.01em; margin-left: -2px">Was soll ich fÃ¼r dich <span style="color: #F7BE6E; position: relative; white-space: nowrap">erledigen<svg aria-hidden="true" width="100%" height="10" sc-camel-view-box="0 0 200 10" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 0; bottom: -8px"><path d="M2 7 C40 1 90 9 130 4 S184 3 198 6" fill="none" stroke="#EE9A3C" stroke-width="2" stroke-linecap="round" opacity=".8"></path></svg></span>?</h1>
+      <p style="margin: 18px 0 40px; font-size: 13px; color: #9A958B; font-family: 'Geist Mono', ui-monospace, monospace; letter-spacing: .02em; padding-left: 14px; border-left: 2px solid #EE9A3C">Ich arbeite nur in deinen Freigaben. GelÃ¶scht wird nichts.</p>
+
+      <div style="position: relative; background: #16171B; border: 1px solid #2A2C33; border-radius: 26px 26px 26px 6px; padding: 18px 18px 14px 22px; border-color: #3A3D45; box-shadow: 0 0 0 6px rgba(238,154,60,.04), 0 30px 60px rgba(0,0,0,.35)">
+        <label for="auftrag" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">Auftrag</label>
+        <textarea id="auftrag" rows="2" placeholder="Auftrag beschreiben â€¦" style="width: 100%; resize: none; border: none; background: transparent; color: #ECE6D9; font-family: 'Geist', system-ui, sans-serif; font-style: normal; font-size: 22px; line-height: 1.35; padding: 0; letter-spacing: -0.01em"></textarea>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px">
+          <button type="button" sc-camel-on-click="{{toggleMenu}}" aria-expanded="{{menuOpenStr}}" aria-label="Botengang: {{modeLabel}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px 0 14px; border-radius: 22px; border: 1px solid #2E3037; background: #1D1F24; font-size: 14px; font-weight: 500; cursor: pointer">
+            <span class="wisp" aria-hidden="true" style="position: relative; width: 12px; height: 12px; flex: none">
+              <span style="position: absolute; left: -12px; top: -12px; right: -12px; bottom: -12px; border-radius: 50%; background: {{wispHalo}}; animation: halo 4.2s ease-in-out infinite"></span>
+              <span style="position: absolute; inset: 0; border-radius: 50%; background: {{wispCore}}; animation: breathe 4.2s ease-in-out infinite"></span>
+            </span>
+            {{modeLabel}}
+            <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9A958B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10l5 5 5-5"></path></svg>
+          </button>
+          <button type="button" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1px solid #2E3037; background: transparent; font-size: 14px; color: #9A958B; cursor: pointer">
+            <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 7.5a2 2 0 0 1 2-2h3.6l2 2.2h7.4a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"></path></svg>
+            Alle Freigaben
+          </button>
+          <button type="button" aria-label="Auftrag senden" style="margin-left: auto; width: 46px; height: 46px; border-radius: 50%; border: none; background: #ECE6D9; color: #0E0F12; display: flex; align-items: center; justify-content: center; cursor: pointer">
+            <svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"></path></svg>
+          </button>
+        </div>
+
+        <sc-if value="{{menuOpen}}" hint-placeholder-val="{{ true }}">
+          <div role="group" aria-labelledby="botengang-frage" style="position: absolute; left: 10px; top: calc(100% + 10px); z-index: 2; width: 384px; background: #131418; border: 1px solid #3A3D45; border-radius: 22px 22px 22px 6px; padding: 16px 16px 14px; box-shadow: 0 0 0 6px rgba(238,154,60,.04), 0 28px 60px rgba(0,0,0,.55); display: flex; flex-direction: column; gap: 12px">
+            <div style="display: flex; flex-direction: column; gap: 6px; padding: 0 4px 12px; border-bottom: 1px dashed #2A2C33">
+              <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #EE9A3C">Botengang</span>
+              <span id="botengang-frage" style="font-size: 18px; font-weight: 600; letter-spacing: -0.01em">Wie weit soll Hugin fliegen?</span>
+            </div>
+            <svg width="352" height="96" sc-camel-view-box="0 0 352 96" aria-hidden="true" style="display: block; overflow: visible">
+              <defs>
+                <radialGradient id="rgE"><stop offset="0" stop-color="#FFF4E0"></stop><stop offset=".35" stop-color="#F7BE6E"></stop><stop offset=".6" stop-color="#EE9A3C" stop-opacity=".6"></stop><stop offset="1" stop-color="#EE9A3C" stop-opacity="0"></stop></radialGradient>
+                <radialGradient id="rgF"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".35" stop-color="#E2F4FA"></stop><stop offset=".6" stop-color="#BEE4F0" stop-opacity=".6"></stop><stop offset="1" stop-color="#BEE4F0" stop-opacity="0"></stop></radialGradient>
+                <radialGradient id="rgA"><stop offset="0" stop-color="#FFF4E0"></stop><stop offset=".3" stop-color="#EE9A3C"></stop><stop offset=".58" stop-color="#BEE4F0" stop-opacity=".6"></stop><stop offset="1" stop-color="#BEE4F0" stop-opacity="0"></stop></radialGradient>
+                <linearGradient id="rgTrail" sc-camel-gradient-units="userSpaceOnUse" x1="36" y1="0" x2="316" y2="0"><stop offset="0" stop-color="#EE9A3C"></stop><stop offset=".55" stop-color="#EE9A3C"></stop><stop offset="1" stop-color="#BEE4F0"></stop></linearGradient>
+              </defs>
+              <path d="M36 66 Q176 -14 316 66" fill="none" stroke="#3A3D45" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"></path>
+              <path d="{{routeSolid}}" fill="none" stroke="url(#rgTrail)" stroke-width="2" stroke-linecap="round" opacity=".9"></path>
+              <circle cx="176" cy="26" r="3" fill="#3A3D45"></circle>
+              <rect x="26" y="53" width="20" height="26" rx="4" fill="#0E0F12" stroke="#9A958B" stroke-width="1.5"></rect>
+              <rect x="33" y="74" width="6" height="1.5" rx=".75" fill="#9A958B"></rect>
+              <text x="36" y="94" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="10" fill="#9A958B">iPad</text>
+              <circle cx="316" cy="66" r="10" fill="#0E0F12" stroke="#BEE4F0" stroke-width="1.5" stroke-dasharray="3 3"></circle>
+              <text x="316" y="94" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="10" fill="#9A958B">Claude</text>
+              <g style="transform: translate({{wx}}px, {{wy}}px); transition: transform 520ms cubic-bezier(.2,.8,.2,1)">
+                <circle r="22" fill="{{routeFill}}" opacity=".55"></circle>
+                <circle r="8" fill="{{routeFill}}"></circle>
+                <circle r="3.5" fill="#FFFFFF"></circle>
+              </g>
+            </svg>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+              <sc-for list="{{options}}" as="o" hint-placeholder-count="3">
+                <button type="button" sc-camel-on-click="{{o.pick}}" aria-pressed="{{o.pressed}}" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 4px; min-height: 64px; padding: 10px 12px; border-radius: 14px 14px 14px 4px; border: 1px solid; text-align: left; cursor: pointer; color: #ECE6D9; font-family: 'Geist', system-ui, sans-serif; {{o.rowStyle}}" style-hover="border-color: #EE9A3C">
+                  <span style="font-size: 15px; font-weight: 600; letter-spacing: -0.01em">{{o.label}}</span>
+                  <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #9A958B">{{o.sub}}</span>
+                </button>
+              </sc-for>
+            </div>
+            <p style="margin: 0; padding: 12px 4px 0; border-top: 1px dashed #2A2C33; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; line-height: 1.5; color: #9A958B">{{modeDesc}}</p>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display: flex; flex-direction: column; margin-top: 34px">
+        <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #EE9A3C; padding-bottom: 6px">VorschlÃ¤ge</span>
+        <sc-for list="{{suggestions}}" as="s" hint-placeholder-count="3">
+          <button type="button" style="display: flex; align-items: center; gap: 14px; min-height: 48px; padding: 0; border: none; border-bottom: 1px dashed #2A2C33; background: transparent; font-size: 19px; text-align: left; cursor: pointer; font-family: 'Geist', system-ui, sans-serif; font-style: normal; letter-spacing: -0.01em" style-hover="padding-left: 10px; color: #F7BE6E">
+            <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#EE9A3C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+            {{s}}
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:820}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { mode: 'auto', menuOpen: true };
+  }
+  renderVals() {
+    const EMBER_CORE = 'radial-gradient(circle at 45% 40%, #FFF4E0 0%, #F7BE6E 34%, #EE9A3C 64%, rgba(238,154,60,0) 74%)';
+    const EMBER_HALO = 'radial-gradient(circle, rgba(238,154,60,.42) 0%, rgba(238,154,60,0) 62%)';
+    const FROST_CORE = 'radial-gradient(circle at 45% 40%, #FFFFFF 0%, #E2F4FA 34%, #BEE4F0 64%, rgba(190,228,240,0) 74%)';
+    const FROST_HALO = 'radial-gradient(circle, rgba(190,228,240,.36) 0%, rgba(190,228,240,0) 62%)';
+    const AUTO_CORE = 'radial-gradient(circle at 45% 40%, #FFF4E0 0%, #F7BE6E 30%, #EE9A3C 50%, #BEE4F0 62%, rgba(190,228,240,0) 74%)';
+    const AUTO_HALO = 'radial-gradient(circle, rgba(238,154,60,.34) 0%, rgba(190,228,240,.22) 38%, rgba(190,228,240,0) 62%)';
+    const modes = {
+      nah: { label: 'Im Haus', sub: 'nur iPad', desc: 'Hugin bleibt bei dir: offline, privat, schnell. Keine Datei verlÃ¤sst das iPad.', core: EMBER_CORE, halo: EMBER_HALO, fill: 'url(#rgE)', wx: 58, wy: 54, solid: 'M36 66 Q47.2 59.6 58.4 54.2' },
+      auto: { label: 'Nach Bedarf', sub: 'lokal, sonst Claude', desc: 'Hugin startet lokal und holt Claude nur dazu, wenn ein Auftrag zu schwer wird. Jede Ãœbergabe siehst du in der Flugbahn.', core: AUTO_CORE, halo: AUTO_HALO, fill: 'url(#rgA)', wx: 176, wy: 26, solid: 'M36 66 Q106 26 176 26' },
+      weit: { label: 'Zu Claude', sub: 'Cloud', desc: 'Hugin trÃ¤gt den Auftrag direkt zu Claude. FÃ¼r schwere AuftrÃ¤ge; nur die nÃ¶tigen Dateien verlassen das iPad.', core: FROST_CORE, halo: FROST_HALO, fill: 'url(#rgF)', wx: 294, wy: 54, solid: 'M36 66 Q164.8 -7.6 293.6 54.2' }
+    };
+    const mode = this.state.mode;
+    const m = modes[mode];
+    const options = ['nah', 'auto', 'weit'].map((k) => {
+      const sel = k === mode;
+      return Object.assign({}, modes[k], {
+        selected: sel,
+        pressed: sel ? 'true' : 'false',
+        rowStyle: sel ? 'background: #22211F; border-color: #EE9A3C' : 'background: #1B1C21; border-color: #2A2C33',
+        pick: () => this.setState({ mode: k, menuOpen: false })
+      });
+    });
+    return {
+      wispCore: m.core,
+      wispHalo: m.halo,
+      modeLabel: m.label,
+      modeDesc: m.desc,
+      routeFill: m.fill,
+      routeSolid: m.solid,
+      wx: m.wx,
+      wy: m.wy,
+      menuOpen: this.state.menuOpen,
+      menuOpenStr: this.state.menuOpen ? 'true' : 'false',
+      toggleMenu: () => this.setState({ menuOpen: !this.state.menuOpen }),
+      options: options,
+      folders: [
+        { name: 'Rechnungen 2026', count: '48' },
+        { name: 'Uni Â· Semester 3', count: '112' },
+        { name: 'Notizen', count: '305' }
+      ],
+      history: [
+        { title: 'Rechnungen Mai zusammengefasst', when: 'gestern Â· lokal' },
+        { title: 'Literaturliste sortiert', when: 'Mo Â· Claude' },
+        { title: 'Notizen nach Thema umbenannt', when: '12.10. Â· lokal' }
+      ],
+      suggestions: [
+        'Fasse meine Notizen dieser Woche zusammen',
+        'Finde alle PDFs ohne Datum im Dateinamen',
+        'Erstelle eine Literaturliste aus Uni Â· Semester 3'
+      ]
+    };
+  }
+}
+</script>
+
+
+</body></html>

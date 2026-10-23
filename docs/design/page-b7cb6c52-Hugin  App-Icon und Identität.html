@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="de"><head>
+<meta charset="utf-8">
+<title>Hugin â€“ App-Icon und IdentitÃ¤t</title>
+<script src="8a6a9f20-99ef-42b4-9e87-c9765db18816"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>/* vietnamese */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHUEj6M7.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHQEj6M7.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("dd0ba01a-b5ea-4277-9b1d-e0a494888527") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHUEj6M7.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHQEj6M7.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("dd0ba01a-b5ea-4277-9b1d-e0a494888527") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHUEj6M7.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHQEj6M7.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("dd0ba01a-b5ea-4277-9b1d-e0a494888527") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHUEj6M7.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHQEj6M7.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("dd0ba01a-b5ea-4277-9b1d-e0a494888527") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1iIq129k.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1isq129k.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1iAq129k.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1iEq129k.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1i8q1w.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwl1FgtIU.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwlRFgtIU.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwl9FgtIU.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwl5FgtIU.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwlBFgg.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9CfjOCX1hbuyalUrK439vCgYhCFpY.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9CfjOCX1hbuyalUrK439vCgIhCFpY.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("a27c1fbe-2be6-4442-9ee3-7e3ed6df0a96") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9CfjOCX1hbuyalUrK439vCgYhCFpY.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9CfjOCX1hbuyalUrK439vCgIhCFpY.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("a27c1fbe-2be6-4442-9ee3-7e3ed6df0a96") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9VfjOCX1hbuyalUrK49dLafXjalZCsZBsgBgbCJYQraA.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9VfjOCX1hbuyalUrK49dLafXjalZCsZBsgBgbDJYQraA.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/newsreader/v26/cY9VfjOCX1hbuyalUrK49dLafXjalZCsZBsgBgbNJYQ.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+body{margin:0;background:#0E0F12}
+*{box-sizing:border-box}
+a{color:#EE9A3C}a:hover{color:#F7BE6E}
+@keyframes halo{0%,100%{opacity:.55;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
+@media (prefers-reduced-motion: reduce){.wisp *{animation:none !important}}
+</style>
+</helmet>
+<div style="width: 1400px; height: 860px; padding: 72px; background: #0E0F12; color: #ECE6D9; font-family: 'Geist', system-ui, sans-serif; display: flex; gap: 80px">
+
+  <div style="width: 440px; display: flex; flex-direction: column; gap: 28px; flex: none">
+    <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #9A958B">App-Icon Â· 1024 px Â· Dunkel</span>
+    <svg width="440" height="440" sc-camel-view-box="0 0 1024 1024" role="img" aria-label="Hugin App-Icon: zwei dunkle StÃ¤be, verbunden durch eine aufsteigende Lichtspur, an deren Ende ein Licht leuchtet">
+      <defs>
+        <linearGradient id="bgL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1D1E23"></stop><stop offset="1" stop-color="#0A0B0D"></stop></linearGradient>
+        <linearGradient id="staveL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#383B42"></stop><stop offset=".45" stop-color="#2A2C32"></stop><stop offset="1" stop-color="#1F2126"></stop></linearGradient>
+        <linearGradient id="trailL" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#EE9A3C" stop-opacity="0"></stop><stop offset=".55" stop-color="#EE9A3C" stop-opacity=".8"></stop><stop offset="1" stop-color="#FFD9A0"></stop></linearGradient>
+        <radialGradient id="glowL"><stop offset="0" stop-color="#FFF8EC"></stop><stop offset=".18" stop-color="#FFD08A"></stop><stop offset=".42" stop-color="#EE9A3C" stop-opacity=".55"></stop><stop offset="1" stop-color="#EE9A3C" stop-opacity="0"></stop></radialGradient>
+        <filter id="blurL" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur sc-camel-std-deviation="18"></feGaussianBlur></filter>
+        <filter id="grainL"><feTurbulence type="fractalNoise" sc-camel-base-frequency=".9" sc-camel-num-octaves="2" sc-camel-stitch-tiles="stitch"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix></filter>
+        <clipPath id="clipL"><rect width="1024" height="1024" rx="230"></rect></clipPath>
+      </defs>
+      <g clip-path="url(#clipL)">
+        <rect width="1024" height="1024" fill="url(#bgL)"></rect>
+        <rect width="1024" height="1024" filter="url(#grainL)" opacity=".07"></rect>
+        <rect x="318" y="236" width="72" height="552" rx="36" fill="url(#staveL)"></rect>
+        <rect x="634" y="236" width="72" height="552" rx="36" fill="url(#staveL)"></rect>
+        <rect x="324" y="262" width="3" height="500" rx="1.5" fill="#50535B" opacity=".55"></rect>
+        <rect x="640" y="262" width="3" height="500" rx="1.5" fill="#50535B" opacity=".55"></rect>
+        <path d="M352.7 648.5 L653.1 360.2 A26 26 0 0 1 686.9 399.8 L355.3 651.5 Z" fill="url(#trailL)" filter="url(#blurL)" opacity=".8"></path>
+        <path d="M352.7 648.5 L653.1 360.2 A26 26 0 0 1 686.9 399.8 L355.3 651.5 Z" fill="url(#trailL)"></path>
+        <circle cx="670" cy="380" r="200" fill="url(#glowL)" opacity=".5"></circle>
+        <circle cx="670" cy="380" r="62" fill="url(#glowL)"></circle>
+        <circle cx="670" cy="380" r="21" fill="#FFF8EC"></circle>
+      </g>
+    </svg>
+    <div style="display: flex; gap: 32px; align-items: flex-end">
+      <sc-for list="{{sizes}}" as="v" hint-placeholder-count="3">
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <svg width="{{v.size}}" height="{{v.size}}" sc-camel-view-box="0 0 1024 1024" role="img" aria-label="{{v.aria}}">
+            <defs>
+              <linearGradient id="{{v.bgId}}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{{v.bg1}}"></stop><stop offset="1" stop-color="{{v.bg2}}"></stop></linearGradient>
+              <linearGradient id="{{v.trId}}" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="{{v.trail}}" stop-opacity="0"></stop><stop offset=".6" stop-color="{{v.trail}}" stop-opacity=".85"></stop><stop offset="1" stop-color="{{v.trail}}"></stop></linearGradient>
+              <radialGradient id="{{v.glId}}"><stop offset="0" stop-color="{{v.core}}"></stop><stop offset=".2" stop-color="{{v.core}}"></stop><stop offset=".45" stop-color="{{v.glow}}" stop-opacity=".55"></stop><stop offset="1" stop-color="{{v.glow}}" stop-opacity="0"></stop></radialGradient>
+            </defs>
+            <rect width="1024" height="1024" rx="230" fill="{{v.bgUrl}}"></rect>
+            <rect x="318" y="236" width="72" height="552" rx="36" fill="{{v.stave}}"></rect>
+            <rect x="634" y="236" width="72" height="552" rx="36" fill="{{v.stave}}"></rect>
+            <path d="M352.7 648.5 L653.1 360.2 A26 26 0 0 1 686.9 399.8 L355.3 651.5 Z" fill="{{v.trUrl}}"></path>
+            <circle cx="670" cy="380" r="170" fill="{{v.glUrl}}" opacity=".6"></circle>
+            <circle cx="670" cy="380" r="58" fill="{{v.glUrl}}"></circle>
+            <circle cx="670" cy="380" r="22" fill="{{v.core}}"></circle>
+          </svg>
+          <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #9A958B">{{v.label}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 46px">
+    <div style="display: flex; flex-direction: column; gap: 14px">
+      <div style="font-size: 112px; font-weight: 600; letter-spacing: -0.045em; line-height: 1; color: #ECE6D9">hug<span style="position: relative; display: inline-block">Ä±<span class="wisp" aria-hidden="true" style="position: absolute; left: 50%; top: .07em; width: .15em; height: .15em; margin-left: -.075em"><span style="position: absolute; left: -120%; top: -120%; right: -120%; bottom: -120%; border-radius: 50%; background: radial-gradient(circle, rgba(238,154,60,.55) 0%, rgba(238,154,60,0) 65%); animation: halo 4.2s ease-in-out infinite"></span><span style="position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 45% 40%, #FFF8EC 0%, #F7BE6E 40%, #EE9A3C 100%)"></span></span></span>n</div>
+      <p style="margin: 0; font-family: 'Geist', system-ui, sans-serif; font-style: normal; font-size: 30px; color: #ECE6D9; letter-spacing: -0.01em">Der Gedanke, der fÃ¼r dich ausfliegt.</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #9A958B">iPadOS-Varianten</span>
+      <div style="display: flex; gap: 28px">
+        <sc-for list="{{variants}}" as="v" hint-placeholder-count="3">
+          <div style="display: flex; flex-direction: column; gap: 10px">
+            <svg width="{{v.size}}" height="{{v.size}}" sc-camel-view-box="0 0 1024 1024" role="img" aria-label="{{v.aria}}">
+              <defs>
+                <linearGradient id="{{v.bgId}}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{{v.bg1}}"></stop><stop offset="1" stop-color="{{v.bg2}}"></stop></linearGradient>
+                <linearGradient id="{{v.trId}}" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="{{v.trail}}" stop-opacity="0"></stop><stop offset=".6" stop-color="{{v.trail}}" stop-opacity=".85"></stop><stop offset="1" stop-color="{{v.trail}}"></stop></linearGradient>
+                <radialGradient id="{{v.glId}}"><stop offset="0" stop-color="{{v.core}}"></stop><stop offset=".2" stop-color="{{v.core}}"></stop><stop offset=".45" stop-color="{{v.glow}}" stop-opacity=".55"></stop><stop offset="1" stop-color="{{v.glow}}" stop-opacity="0"></stop></radialGradient>
+              </defs>
+              <rect width="1024" height="1024" rx="230" fill="{{v.bgUrl}}"></rect>
+              <rect x="318" y="236" width="72" height="552" rx="36" fill="{{v.stave}}"></rect>
+              <rect x="634" y="236" width="72" height="552" rx="36" fill="{{v.stave}}"></rect>
+              <path d="M352.7 648.5 L653.1 360.2 A26 26 0 0 1 686.9 399.8 L355.3 651.5 Z" fill="{{v.trUrl}}"></path>
+              <circle cx="670" cy="380" r="170" fill="{{v.glUrl}}" opacity=".6"></circle>
+              <circle cx="670" cy="380" r="58" fill="{{v.glUrl}}"></circle>
+              <circle cx="670" cy="380" r="22" fill="{{v.core}}"></circle>
+            </svg>
+            <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #9A958B">{{v.label}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #9A958B">Farben</span>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px">
+        <sc-for list="{{palette}}" as="p" hint-placeholder-count="7">
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <div style="height: 48px; border-radius: 12px; border: 1px solid #2E3037; background: {{p.hex}}"></div>
+            <span style="font-size: 14px; font-weight: 600; color: #ECE6D9">{{p.name}}</span>
+            <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #9A958B">{{p.hex}} Â· {{p.role}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px">
+      <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #9A958B">Schrift</span>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 26px; font-weight: 600; letter-spacing: -0.02em">Geist</span>
+          <span style="font-size: 13px; color: #9A958B">OberflÃ¤che, Titel, AuftrÃ¤ge, Labels</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-family: 'Geist', system-ui, sans-serif; font-style: normal; font-size: 28px; letter-spacing: -0.01em">Geist Regular</span>
+          <span style="font-size: 13px; color: #9A958B">Deine AuftrÃ¤ge, ruhig und klar</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 20px; padding-top: 4px">Geist Mono</span>
+          <span style="font-size: 13px; color: #9A958B">Werkzeuge, Pfade, Zeiten</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:860}}">
+class Component extends DCLogic {
+  renderVals() {
+    const dark = { bg1: '#1D1E23', bg2: '#0A0B0D', stave: '#2B2D33', trail: '#EE9A3C', core: '#FFF8EC', glow: '#EE9A3C' };
+    const light = { bg1: '#F4EFE4', bg2: '#E2DACA', stave: '#CBC1AE', trail: '#D47A22', core: '#FFF4E2', glow: '#E58A2B' };
+    const tint = { bg1: '#2C2C2E', bg2: '#151516', stave: '#3C3C3F', trail: '#F2F2F2', core: '#FFFFFF', glow: '#FFFFFF' };
+    const mk = (key, label, aria, c, size) => Object.assign({}, c, {
+      label: label, aria: aria, size: size,
+      bgId: 'bg-' + key, bgUrl: 'url(#bg-' + key + ')',
+      trId: 'tr-' + key, trUrl: 'url(#tr-' + key + ')',
+      glId: 'gl-' + key, glUrl: 'url(#gl-' + key + ')'
+    });
+    return {
+      variants: [
+        mk('vd', 'Dunkel Â· Standard', 'Icon, dunkle Variante', dark, 140),
+        mk('vl', 'Hell', 'Icon, helle Variante', light, 140),
+        mk('vt', 'GetÃ¶nt', 'Icon, getÃ¶nte Variante', tint, 140)
+      ],
+      sizes: [
+        mk('s1', 'Home Â· 76 pt', 'Icon in Home-Bildschirm-GrÃ¶ÃŸe', dark, 152),
+        mk('s2', 'Spotlight Â· 40 pt', 'Icon in Spotlight-GrÃ¶ÃŸe', dark, 80),
+        mk('s3', 'Einstellungen Â· 29 pt', 'Icon in Einstellungen-GrÃ¶ÃŸe', dark, 58)
+      ],
+      palette: [
+        { name: 'Basalt', hex: '#0E0F12', role: 'Grund' },
+        { name: 'Schiefer', hex: '#1D1F24', role: 'FlÃ¤chen' },
+        { name: 'Knochen', hex: '#ECE6D9', role: 'Text' },
+        { name: 'Asche', hex: '#9A958B', role: 'Neben' },
+        { name: 'Glut', hex: '#EE9A3C', role: 'lokal' },
+        { name: 'Frost', hex: '#BEE4F0', role: 'Claude' },
+        { name: 'Rost', hex: '#E0613F', role: 'Fehler' }
+      ]
+    };
+  }
+}
+</script>
+
+
+</body></html>
