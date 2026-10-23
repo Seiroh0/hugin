@@ -142,7 +142,7 @@ struct FileTools: Sendable {
         guard !FileManager.default.fileExists(atPath: target.path) else { throw FileError.existsNeedsConfirmation }
         do { try FileManager.default.moveItem(at: url, to: target) }
         catch { throw FileError.ioFailure(error.localizedDescription) }
-        return relPath(of: target)
+        return self.relPath(of: target)
     }
 
     func move(_ relPath: String, toFolder: String) throws -> String {
@@ -156,6 +156,6 @@ struct FileTools: Sendable {
         guard !FileManager.default.fileExists(atPath: target.path) else { throw FileError.existsNeedsConfirmation }
         do { try FileManager.default.moveItem(at: url, to: target) }
         catch { throw FileError.ioFailure(error.localizedDescription) }
-        return relPath(of: target)
+        return self.relPath(of: target)
     }
 }
