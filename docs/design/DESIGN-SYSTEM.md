@@ -123,3 +123,19 @@ SVG liegt in `page-b7cb6c52…html`: BG-Gradient `#1D1E23→#0A0B0D` (rx 230), F
 - Min-Touch 44 px überall, Fokus-Ringe (Knochen), `prefers-reduced-motion` → nur Blends
 - Keine reinen Farbcodes ohne Text: Übergabe hat immer Erklärtext; Punktfarben haben Legende
 - Deutsch, Du-Form; Mono-Labels UPPERCASE
+
+## 8. Schatten & Radien im Detail (für Implementer)
+
+| Element | Schatten | Radius |
+|---|---|---|
+| Composer-Card (Start) | `0 0 0 6px rgba(238,154,60,.04)` + `0 30px 60px rgba(0,0,0,.35)` | `26 26 26 6` (Sprechblase, Ecke unten links spitz) |
+| Botengang-Menü | `0 0 0 6px rgba(238,154,60,.04)` + `0 28px 60px rgba(0,0,0,.55)` | `22 22 22 6` |
+| Halten-Dialog | `0 40px 120px rgba(0,0,0,.6)` | 28 |
+| Karten (Wisp-Zustände etc.) | – | 20 |
+| Extraktions-Karte (Fundstück) | `inset 0 2px 0 #EE9A3C` + `0 20px 40px rgba(0,0,0,.4)` | `6 18 18 18` (unten links spitz) |
+| Halten-Knopf | – | 30 (Capsule) |
+| Pills (Running-Pill, Buttons) | – | 22 |
+| Datei-Chips (Flugbahn) | – | 8 |
+| App-Icon | – | rx 230 (iOS mascht ohnehin) |
+
+Farb-Tints: Diff entfernt `rgba(224,97,63,.10)`, Diff hinzugefügt `rgba(190,228,240,.07)`; Fundstück-Summe-Box `rgba(190,228,240,.10)` + Border `rgba(190,228,240,.7)`. Overlay: `rgba(6,7,9,.7)`.
