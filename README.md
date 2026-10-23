@@ -5,14 +5,13 @@
   <img src="Assets/AppIcon-hell.png" width="128" alt="Hugin App-Icon" title="Hugin">
 </picture>
 
-# hugın
+# hugin
 
 **Der Gedanke, der für dich ausfliegt.**
 
 Ein KI-Datei-Agent fürs iPad — offline, privat, und nur dort, wo du es erlaubst.
 
-[![CI](https://github.com/Seiroh0/hugin/actions/workflows/ci.yml/badge.svg)](https://github.com/Seiroh0/hugin/actions/workflows/ci.yml)
-[![Security](https://github.com/Seiroh0/hugin/actions/workflows/security.yml/badge.svg)](https://github.com/Seiroh0/hugin/actions/workflows/security.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/Seiroh0/hugin/ci.yml?branch=master&label=CI&labelColor=0E0F12)](https://github.com/Seiroh0/hugin/actions/workflows/ci.yml)
 ![Plattform](https://img.shields.io/badge/Plattform-iPadOS%2026%2B-BEE4F0?labelColor=0E0F12)
 ![Swift](https://img.shields.io/badge/Swift-6-EE9A3C?labelColor=0E0F12)
 ![Vertrieb](https://img.shields.io/badge/Eigennutzung-Sideload-9A958B?labelColor=0E0F12)
