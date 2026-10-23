@@ -1,5 +1,7 @@
 # PadPilot MVP – Umsetzungsplan
 
+> **Status: FINAL (v5)** – 5 Review-Runden über 4 Agenten (aiphaistos: Architektur, aires: Security, aipollo: Tests, aithena: Nutzer-Sicht). Alle vier haben OK gegeben.
+
 > **Für ausführende Agenten:** BENÖTIGTES SUB-SKILL: superpowers:subagent-driven-development (empfohlen) oder superpowers:executing-plans, um diesen Plan Aufgabe für Aufgabe umzusetzen. Schritte nutzen Checkbox-Syntax (`- [ ]`).
 
 **Ziel:** Eine native iPad-App („PadPilot"), in der ein KI-Agent per Chat Dateien in freigegebenen Ordnern findet, liest, zusammenfasst, bearbeitet, umbenennt und verschiebt.
