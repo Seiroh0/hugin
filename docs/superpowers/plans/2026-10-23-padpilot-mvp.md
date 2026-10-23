@@ -18,6 +18,7 @@
 - **Max. 15 Werkzeugaufrufe pro Auftrag** (AgentRunner)
 - Dateioperationen **nur innerhalb** security-scoped Freigaben (Containment-Check `resolve()`)
 - Claude-API-Key nur im Keychain, niemals in Code/Repo/Logs; UI- und Kommentarsprache Deutsch
+- Claude-Anbindung bewusst **non-streaming** (Spec-Reduktion, Streaming folgt in Phase 2)
 - Tests: XCTest, laufen in GitHub Actions (macOS-Runner, iOS-Simulator). **TDD-Anpassung:** lokal kein Swift verfügbar → Test wird vor Implementation geschrieben, Rot-Phase wird im selben CI-Run geprüft (Test schlägt bei falscher Implementierung fehl, Tests sind verhaltensspezifisch). Bei jedem Task: Commit + Push, CI muss grün sein, bevor der nächste Task beginnt.
 - Commits: Conventional Commits (`feat:`, `test:`, `build:`, `docs:`)
 - CI-Stellschrauben (bewusst): Runner-Image `macos-26`, Simulator-Name im Workflow – anpassen, falls CI sie nicht findet (`xcrun simctl list devices available` steht im CI-Log)
@@ -162,14 +163,16 @@ KI-Datei-Agent fürs iPad (Details: docs/superpowers/specs/…-design.md)
 ## Installation (ohne Mac)
 1. **GitHub-Repo anlegen** (public empfohlen – macOS-CI gratis, keine Secrets im Repo) und pushen:
    `git remote add origin <REPO-URL>` → `git push -u origin master`
-2. **CI abwarten**: Actions-Tab → Run „CI" → grün → Artifact `PadPilot-unsigned.ipa` herunterladen (ggf. über Tailscale auf den PC holen)
-3. **Sideloadly** (sideloadly.io, Windows) installieren; iTunes-Treiber mitinstallieren lassen
+2. **CI abwarten**: GitHub-Repo → Tab „Actions" → neuesten Lauf anklicken → ganz unten unter „Artifacts" `PadPilot-unsigned.ipa` herunterladen (ggf. über Tailscale auf den PC holen)
+3. **Sideloadly** (sideloadly.io, Windows) installieren; iTunes-Treiber mitinstallieren lassen. Sideloadly ist ein Tool, das Apps ohne App-Store aufs iPad bringt – die Apple-ID braucht es nur zum Signieren der App auf deinem PC
 4. iPad per **USB** an den PC, Sideloadly starten: IPA wählen → Apple-ID eintragen → Install
 5. iPad: **Einstellungen → Allgemein → VPN & Geräteverwaltung** → Apple-ID-Profil → **Vertrauen**
 6. App starten → Einstellungen → Claude-API-Key eintragen, Ordner freigeben
 
 **Gratis-Apple-ID:** App läuft 7 Tage, dann Schritt 4 wiederholen (Daten bleiben).
 **Nur zur eigenen Nutzung** – kein App-Store-Vertrieb.
+
+**Hinweis:** Ein öffentliches Repo macht auch die Dokumentation (Spec/Plan) öffentlich – wer das nicht möchte, wählt ein privates Repo (macOS-CI-Minuten sind dann begrenzt).
 ```
 
 - [ ] **Schritt 3: Nutzer-Handschritt** – GitHub-Repo anlegen + `git remote add origin <URL> && git push -u origin master`
@@ -410,7 +413,7 @@ struct ChatMessage: Codable, Sendable, Identifiable, Equatable {
 - Create: `Sources/Core/Grant.swift`, `Sources/Core/FileTools.swift`, `Tests/FileToolsTests.swift`
 
 **Interfaces:**
-- Produces: `struct Grant: Identifiable, Equatable, Sendable { id: UUID, name: String, url: URL }` (SecurityStore in Task 8 produziert `[Grant]`), `struct FileTools: Sendable { init(roots: [Grant]) }`, `func resolve(String) -> URL?` (nil bei Fluchtversuch), `func list(folder: String) throws -> [FileEntry]`, `struct FileEntry { relPath, name, isFolder, byteSize: Int? }`, `enum FileError: Error, Equatable { outsideSandbox, notFound, notAFolder, isFolder, unsupportedFormat, existsNeedsConfirmation, ioFailure(String) }`
+- Produces: `struct Grant: Identifiable, Equatable, Sendable { id: UUID, name: String, url: URL }` (SecurityStore in Task 8 produziert `[Grant]`; gleiche Ordnernamen werden dort abgelehnt), `struct FileTools: Sendable { init(roots: [Grant]) }`, `func resolve(String) -> URL?` (nil bei Fluchtversuch – lexikalisch UND real über aufgelöste Symlinks geprüft), `func list(folder: String) throws -> [FileEntry]`, `struct FileEntry { relPath, name, isFolder, byteSize: Int? }`, `enum FileError: Error, Equatable { outsideSandbox, notFound, notAFolder, isFolder, unsupportedFormat, existsNeedsConfirmation, ioFailure(String) }`
 
 - [ ] **Schritt 1: Tests schreiben**
 ```swift
@@ -436,6 +439,21 @@ final class FileToolsTests: XCTestCase {
         XCTAssertNil(tools.resolve("Fremd/datei.txt"))       // andere Freigabe
         XCTAssertNotNil(tools.resolve("Doku/a.txt"))
         XCTAssertNotNil(tools.resolve("Doku/./sub/../a.txt"))
+    }
+
+    func testSymlinkFluchtBlockiert() throws {
+        try FileManager.default.createSymbolicLink(at: tmp.appendingPathComponent("link"),
+                                                   withDestinationURL: tmp.deletingLastPathComponent())
+        XCTAssertNil(tools.resolve("Doku/link/irgendwas.txt"))
+    }
+
+    func testPercentEncodingBleibtInDerSandbox() {
+        // „%2e%2e" darf niemals zu einem Pfad außerhalb der Freigabe führen
+        if let url = tools.resolve("Doku/%2e%2e/geheim.txt") {
+            let real = url.resolvingSymlinksInPath().path
+            let root = tmp.resolvingSymlinksInPath().path
+            XCTAssertTrue(real == root || real.hasPrefix(root + "/"))
+        } // nil wäre auch in Ordnung – Hauptsache nie außerhalb
     }
 
     func testList() throws {
@@ -488,7 +506,12 @@ struct FileTools: Sendable {
             if c == ".." { guard !stack.isEmpty else { return nil }; stack.removeLast() }
             else { stack.append(c) }
         }
-        return stack.reduce(root.url) { $0.appendingPathComponent($1) }
+        let url = stack.reduce(root.url) { $0.appendingPathComponent($1) }
+        // ponytail: Containment doppelt – lexikalisch oben, hier real (dekodiert, Symlinks aufgelöst)
+        let rootPath = root.url.resolvingSymlinksInPath().path
+        let realPath = url.resolvingSymlinksInPath().path
+        guard realPath == rootPath || realPath.hasPrefix(rootPath + "/") else { return nil }
+        return url
     }
 
     func list(folder relPath: String) throws -> [FileEntry] {
@@ -515,8 +538,11 @@ struct FileTools: Sendable {
     }
 
     func relPath(of url: URL) -> String {
-        for root in roots where url.path.hasPrefix(root.url.path) {
-            let sub = String(url.path.dropFirst(root.url.path.count + 1))
+        let real = url.resolvingSymlinksInPath().path
+        for root in roots {
+            let rootPath = root.url.resolvingSymlinksInPath().path
+            guard real == rootPath || real.hasPrefix(rootPath + "/") else { continue }
+            let sub = real == rootPath ? "" : String(real.dropFirst(rootPath.count + 1))
             return sub.isEmpty ? root.name : "\(root.name)/\(sub)"
         }
         return url.lastPathComponent
@@ -535,7 +561,7 @@ struct FileTools: Sendable {
 - Test: `Tests/FileToolsTests.swift` (erweitern)
 
 **Interfaces:**
-- Consumes: Task-5-Typen. Produces: `func read(_ relPath: String) throws -> String` (Textformate + PDF-Text, >200 KB wird abgeschnitten mit Hinweis), `func search(nameContains: String, contentContains: String?) throws -> [FileEntry]`; Konstanten `maxReadBytes = 200_000`, `textExtensions`, `readableExtensions`
+- Consumes: Task-5-Typen. Produces: `func read(_ relPath: String) throws -> String` (Textformate + PDF-Text; Ordner → `.isFolder`; >200 KB wird abgeschnitten mit Hinweis), `func search(nameContains: String, contentContains: String?) throws -> [FileEntry]`; Konstante `maxReadBytes = 200_000`, `textExtensions`
 
 - [ ] **Schritt 1: Tests hinzufügen**
 ```swift
@@ -574,20 +600,37 @@ struct FileTools: Sendable {
         let byContent = try tools.search(nameContains: "", contentContains: "4711")
         XCTAssertEqual(byContent.map(\.name), ["r1.md"])
     }
+
+    func testPDFOhneTextlayer() throws {
+        let data = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: 100, height: 100)).pdfData { ctx in
+            ctx.beginPage()
+            ctx.fill(CGRect(x: 0, y: 0, width: 50, height: 50))   // nur Grafik, kein Text
+        }
+        try data.write(to: tmp.appendingPathComponent("leer.pdf"))
+        XCTAssertThrowsError(try tools.read("Doku/leer.pdf")) { XCTAssertEqual($0 as? FileError, .unsupportedFormat) }
+    }
+
+    func testUmlauteUndEmoji() throws {
+        let name = "Rechnung Ä-ö-ü 🧾.md"
+        try "Inhalt".write(to: tmp.appendingPathComponent(name), atomically: true, encoding: .utf8)
+        XCTAssertEqual(try tools.read("Doku/\(name)"), "Inhalt")
+        XCTAssertEqual(try tools.rename("Doku/\(name)", to: "Neu-Ä.md"), "Doku/Neu-Ä.md")
+    }
 ```
 - [ ] **Schritt 2: Implementierung (in FileTools.swift ergänzen)**
 ```swift
     static let maxReadBytes = 200_000
     static let textExtensions: Set<String> = ["txt","md","csv","json","log","swift","py","html","xml","yml","yaml"]
-    static let readableExtensions: Set<String> = ["pdf"]
 
     func read(_ relPath: String) throws -> String {
         guard let url = resolve(relPath) else { throw FileError.outsideSandbox }
-        guard FileManager.default.fileExists(atPath: url.path) else { throw FileError.notFound }
+        var isDir: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir) else { throw FileError.notFound }
+        if isDir.boolValue { throw FileError.isFolder }
         let ext = url.pathExtension.lowercased()
         let content: String
         if ext == "pdf" {
-            guard let doc = PDFDocument(url: url), let text = doc.string else { throw FileError.unsupportedFormat }
+            guard let doc = PDFDocument(url: url), let text = doc.string, !text.isEmpty else { throw FileError.unsupportedFormat }
             content = text
         } else if Self.textExtensions.contains(ext) {
             let data = FileManager.default.contents(atPath: url.path) ?? Data()
@@ -654,7 +697,7 @@ Zusätzlich `import PDFKit` am Dateikopf.
         XCTAssertEqual(card?.kind, .backup)
         XCTAssertEqual(try tools.read("Doku/n.md"), "b")
         let backupPath = backup.appendingPathComponent(card!.detail)
-        XCTAssertTrue(FileManager.default.fileExists(atPath: backupPath))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: backupPath.path))
         XCTAssertEqual(try String(contentsOf: backupPath, encoding: .utf8), "a")
     }
     func testRenameUndMove() throws {
@@ -687,7 +730,7 @@ Zusätzlich `import PDFKit` am Dateikopf.
 
     func rename(_ relPath: String, to newName: String) throws -> String {
         guard let url = resolve(relPath) else { throw FileError.outsideSandbox }
-        guard !newName.contains("/"), newName != "." && newName != ".." else { throw FileError.outsideSandbox }
+        guard !newName.contains("/"), !newName.hasPrefix(".") else { throw FileError.outsideSandbox }
         guard FileManager.default.fileExists(atPath: url.path) else { throw FileError.notFound }
         let target = url.deletingLastPathComponent().appendingPathComponent(newName)
         guard !FileManager.default.fileExists(atPath: target.path) else { throw FileError.existsNeedsConfirmation }
@@ -720,7 +763,7 @@ Zusätzlich `import PDFKit` am Dateikopf.
 - Test: `Tests/SecurityStoreTests.swift`
 
 **Interfaces:**
-- Consumes: `Grant` (Task 5). Produces: `final class SecurityStore` mit `init(defaults: UserDefaults = .standard)`, `@discardableResult func addGrant(url: URL) throws -> Grant`, `func loadGrants() -> [Grant]` (ungültige Bookmarks werden übersprungen, App stürzt nicht), `func saveKey(_ key: String) throws`, `func loadKey() -> String?`, `func removeKey()`
+- Consumes: `Grant` (Task 5). Produces: `final class SecurityStore` mit `init(defaults: UserDefaults = .standard)`, `@discardableResult func addGrant(url: URL) throws -> Grant` (lehnt doppelte Ordnernamen ab), `func loadGrants() -> (grants: [Grant], skipped: Int)` (ungültige/verfallene Bookmarks werden übersprungen und gezählt, App stürzt nicht), `func saveKey(_ key: String) throws`, `func loadKey() -> String?`, `func removeKey()`
 
 - [ ] **Schritt 1: Tests schreiben**
 ```swift
@@ -750,7 +793,13 @@ final class SecurityStoreTests: XCTestCase {
         _ = try store.addGrant(url: tmp)
         defaults.set(try JSONEncoder().encode([BookmarkRecord(id: UUID(), name: "Kaputt", data: Data([1, 2, 3])]),
                                               forKey: SecurityStore.storageKey)
-        XCTAssertTrue(store.loadGrants().isEmpty)
+        let (grants, skipped) = store.loadGrants()
+        XCTAssertTrue(grants.isEmpty)
+        XCTAssertEqual(skipped, 1)
+    }
+    func testDoppelteNamenVerboten() throws {
+        _ = try store.addGrant(url: tmp)
+        XCTAssertThrowsError(try store.addGrant(url: tmp))
     }
     func testKeyRoundtrip() throws {
         XCTAssertNil(store.loadKey())
@@ -785,22 +834,27 @@ final class SecurityStore: @unchecked Sendable {
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
         let data = try url.bookmarkData()
         var records = Self.decode(defaults.data(forKey: Self.storageKey))
+        guard !records.contains(where: { $0.name == url.lastPathComponent }) else {
+            throw FileError.ioFailure("Ordner mit diesem Namen ist bereits freigegeben")
+        }
         let grant = Grant(id: UUID(), name: url.lastPathComponent, url: url)
         records.append(BookmarkRecord(id: grant.id, name: grant.name, data: data))
         defaults.set(try JSONEncoder().encode(records), forKey: Self.storageKey)
         return grant
     }
 
-    func loadGrants() -> [Grant] {
+    func loadGrants() -> (grants: [Grant], skipped: Int) {
         var grants: [Grant] = []
+        var skipped = 0
         for record in Self.decode(defaults.data(forKey: Self.storageKey)) {
             var stale = false
             guard let url = try? URL(resolvingBookmarkData: record.data, relativeTo: nil,
-                                     bookmarkDataIsStale: &stale), !stale else { continue }
+                                     bookmarkDataIsStale: &stale), !stale else { skipped += 1; continue }
+            // Zugriff bleibt bewusst für die App-Lebenszeit aktiv (ein start pro Grant, kein stop)
             _ = url.startAccessingSecurityScopedResource()
             grants.append(Grant(id: record.id, name: record.name, url: url))
         }
-        return grants
+        return (grants, skipped)
     }
 
     private static func decode(_ data: Data?) -> [BookmarkRecord] {
@@ -812,7 +866,8 @@ final class SecurityStore: @unchecked Sendable {
     private var query: [String: Any] {
         [kSecClass as String: kSecClassGenericPassword,
          kSecAttrService as String: service,
-         kSecAttrAccount as String: "claude"]
+         kSecAttrAccount as String: "claude",
+         kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly]
     }
 
     func saveKey(_ key: String) throws {
@@ -837,7 +892,7 @@ final class SecurityStore: @unchecked Sendable {
 }
 ```
 - [ ] **Schritt 3: Commit + Push + CI grün** – `git commit -m "feat: SecurityStore für Freigaben und Keychain"`
-- [ ] **Schritt 4: Review-Fokus** – Verfallene/kaputte Freigabe wird übersprungen statt Crash (`testKaputtesBookmarkWirdUebersprungen`).
+- [ ] **Schritt 4: Review-Fokus** – Verfallene/kaputte Freigabe wird übersprungen und gezählt statt Crash (`testKaputtesBookmarkWirdUebersprungen`); UI fragt bei `skipped > 0 && grants.isEmpty` zur Neu-Freigabe (Task 13).
 
 ---
 
@@ -923,7 +978,7 @@ final class PadPilotStore: @unchecked Sendable {
 - Test: `Tests/ClaudeClientTests.swift`
 
 **Interfaces:**
-- Consumes: Task 3 (Verträge), Task 2 (JSONValue). Produces: `final class ClaudeClient: ModelProvider` mit `init(apiKey: String, model: String = "claude-sonnet-4-5", session: URLSession = .shared)`; wirft `ModelError.unauthorized` bei HTTP 401, `ModelError.network` sonst; `static func parse(_ data: Data) throws -> ProviderResponse`
+- Consumes: Task 3 (Verträge), Task 2 (JSONValue). Produces: `final class ClaudeClient: ModelProvider` mit `init(apiKey: String, model: String = "claude-sonnet-4-5", session: URLSession = URLSession(configuration: .ephemeral))` (ephemeral = keine Disk-Caches für Dateiinhalte); wirft `ModelError.unauthorized` bei HTTP 401, `ModelError.network` sonst; `static func parse(_ data: Data) throws -> ProviderResponse`
 
 - [ ] **Schritt 1: Tests schreiben**
 ```swift
@@ -1006,7 +1061,7 @@ final class ClaudeClient: ModelProvider, @unchecked Sendable {
     private let model: String
     private let session: URLSession
 
-    init(apiKey: String, model: String = "claude-sonnet-4-5", session: URLSession = .shared) {
+    init(apiKey: String, model: String = "claude-sonnet-4-5", session: URLSession = URLSession(configuration: .ephemeral)) {
         self.apiKey = apiKey; self.model = model; self.session = session
     }
 
@@ -1135,7 +1190,6 @@ final class AppleSystemModel: ModelProvider, @unchecked Sendable {
     private let backupDir: URL
     private let onCard: @Sendable (ActionCard) -> Void
     private let confirm: @Sendable (String) async -> Bool
-    private let backingModel = SystemLanguageModel.default
 
     init?(fileTools: FileTools, backupDir: URL,
           onCard: @Sendable (ActionCard) -> Void,
@@ -1248,7 +1302,7 @@ private final class ToolBox: @unchecked Sendable {
 }
 ```
 - [ ] **Schritt 3: Commit + Push + CI grün** – `git commit -m "feat: On-Device-Provider mit FoundationModels-Tools"`
-- [ ] **Schritt 4: Risikenotiz** – FM-API-Signaturen (LanguageModelSession, @GenerableTool, Instructions) beim Umsetzen gegen die Apple-Doku prüfen; falls CI-Compiler abweicht: anpassen, Tests des FileTools bleiben unberührt.
+- [ ] **Schritt 4: Risikenotiz** – FM-API-Signaturen (LanguageModelSession, @GenerableTool, Instructions) beim Umsetzen gegen die Apple-Doku prüfen; falls der CI-Compiler abweicht: **Fallback-Stufe** = `AppleSystemModel.respond` wirft sofort `ModelError.unavailable` (dünner Stub), App läuft Claude-only, echte FM-Bindung in Phase 2 nachziehen. `ToolBox` ist bewusst ein 1:1-Pass-Through zu den getesteten `FileTools` – der FM-Aufrufpfad selbst bleibt im CI ungetestet (bekanntes Limit, XCTSkip).
 
 ---
 
@@ -1259,7 +1313,7 @@ private final class ToolBox: @unchecked Sendable {
 - Test: `Tests/AgentRunnerTests.swift`
 
 **Interfaces:**
-- Consumes: FileTools, ModelProvider, ActionCard, ChatMessage. Produces: `struct AgentRunner: Sendable` mit `init(provider:, fileTools:, backupDir:, onCard: @Sendable (ActionCard) -> Void, confirm: @Sendable (String) async -> Bool)`, `static let systemPrompt`, `static let toolSpecs: [ToolSpec]`, `func run(userText: String, prior: [ProviderMessage]) async throws -> RunResult`, `enum RunResult { completed(text:, cards:), limitReached(text:, cards:) }`, `static let maxSteps = 15`
+- Consumes: FileTools, ModelProvider, ActionCard, ChatMessage. Produces: `struct AgentRunner: Sendable` mit `init(provider:, fileTools:, backupDir:, onCard: @Sendable (ActionCard) -> Void, confirm: @Sendable (String) async -> Bool)`, `static let systemPrompt`, `static let toolSpecs: [ToolSpec]`, `func run(userText: String, prior: [ProviderMessage]) async throws -> RunResult`, `enum RunResult { completed(text:, cards:), limitReached(text:, cards:) }`, `static let maxSteps = 15` (zählt **Werkzeugaufrufe**, nicht Runden; `write_file` auf existierende Datei fragt **immer** nach Bestätigung – das LLM-Argument `overwrite` wird ignoriert)
 
 - [ ] **Schritt 1: Tests schreiben**
 ```swift
@@ -1332,6 +1386,18 @@ final class AgentRunnerTests: XCTestCase {
         XCTAssertTrue(all.contains { $0.kind == .hint })  // Ablehnung als Hinweis
     }
 
+    func testOverwriteTrueTrotzdemGate() async throws {
+        try "a".write(to: tmp.appendingPathComponent("n.txt"), atomically: true, encoding: .utf8)
+        let (runner, _, _) = makeRunner(script: [
+            .init(text: "", toolCalls: [.init(id: "1", name: "write_file",
+                arguments: .object(["path": .string("Doku/n.txt"), "content": .string("x"), "overwrite": .bool(true)]))]),
+            .init(text: "ok", toolCalls: [])
+        ], confirm: { _ in false })
+        _ = try await runner.run(userText: "x", prior: [])
+        // Gate muss auch bei overwrite:true greifen – Datei unverändert
+        XCTAssertEqual(try tools.read("Doku/n.txt"), "a")
+    }
+
     func testFehlerWirdBeobachtung() async throws {
         let (runner, fake, _) = makeRunner(script: [
             .init(text: "", toolCalls: [
@@ -1367,9 +1433,9 @@ struct AgentRunner: Sendable {
     static let systemPrompt = """
     Du bist PadPilot, ein Datei-Agent auf einem iPad. Du bearbeitest ausschließlich Dateien \
     in den Freigaben des Nutzers. Pfade beginnen immer mit dem Freigabe-Namen, z. B. 'Doku/Notizen/a.md'. \
-    Löschen ist nicht erlaubt. Vor dem Überschreiben einer bestehenden Datei fragst du über das \
-    Werkzeug write_file (overwrite: false) an und akzeptierst die Entscheidung des Nutzers. \
-    Antworte kurz und klar auf Deutsch. Nutze Werkzeuge, statt zu raten.
+    Löschen ist nicht erlaubt. Das Überschreiben bestehender Dateien bestätigt der Nutzer in einem \
+    Dialog – akzeptiere seine Entscheidung ohne Nachfragen. Antworte kurz und klar auf Deutsch. \
+    Nutze Werkzeuge, statt zu raten.
     """
 
     static let toolSpecs: [ToolSpec] = [
@@ -1431,12 +1497,14 @@ struct AgentRunner: Sendable {
         var messages = prior
         messages.append(.user(userText))
         var produced: [ActionCard] = []
-        for _ in 0..<Self.maxSteps {
+        var performedCalls = 0
+        while performedCalls < Self.maxSteps {
             let resp = try await provider.respond(system: Self.systemPrompt,
                                                    messages: messages, tools: Self.toolSpecs)
             if resp.toolCalls.isEmpty {
                 return .completed(text: resp.text, cards: produced)
             }
+            performedCalls += resp.toolCalls.count
             messages.append(.assistant(text: resp.text, toolCalls: resp.toolCalls))
             for call in resp.toolCalls {
                 let (obs, cards) = await execute(call)
@@ -1474,8 +1542,9 @@ struct AgentRunner: Sendable {
             case "write_file":
                 let path = str("path")
                 let exists = fileTools.resolve(path).map { FileManager.default.fileExists(atPath: $0.path) } ?? false
-                let overwrite = arg["overwrite"]?.boolValue ?? false
-                if exists && !overwrite {
+                // Gate hängt NIE am LLM-Argument 'overwrite': Jede existierende Datei wird
+                // bestätigt (Prompt-Injection-Schutz, Review-Fokus #2)
+                if exists {
                     guard await confirm("Datei '\(path)' überschreiben?") else {
                         card(.hint, "Überschreiben abgelehnt", path)
                         return ("Nutzer hat Überschreiben abgelehnt.", cards)
@@ -1522,7 +1591,7 @@ Hinweis: `write` erhält `overwrite: exists`, weil der Bestätigungsfall oben be
 - Test: `Tests/ChatViewModelTests.swift`
 
 **Interfaces:**
-- Consumes: AgentRunner, AppleSystemModel, ClaudeClient, SecurityStore, PadPilotStore, ChatMessage. Produces: `@MainActor @Observable final class ChatViewModel` mit `enum Mode: String, Codable { auto, onDevice, claude }`, `var messages: [ChatMessage]`, `var status: Status { idle, thinking, error(String) }`, `var mode: Mode`, `var grants: [Grant]`, `var draft: String`, `var pendingConfirmation: Confirmation?`, `func load()`, `func addGrant(url: URL)`, `func saveKey(_ key: String)`, `func run(_ text: String)` (startet internen Task), `func waitForRunEnd() async`, `func resolveConfirmation(_ allowed: Bool)`, `struct Confirmation: Identifiable { id, prompt }`. Init (testbar): `init(security: SecurityStore = SecurityStore(), store: PadPilotStore? = nil, makeProvider: ((Mode) throws -> ModelProvider)? = nil)` – Ohne injizierte Factory baut das VM echte Provider (AppleSystemModel/ClaudeClient mit Key aus dem Keychain)
+- Consumes: AgentRunner, AppleSystemModel, ClaudeClient, SecurityStore, PadPilotStore, ChatMessage. Produces: `@MainActor @Observable final class ChatViewModel` mit `enum Mode: String, Codable { auto, onDevice, claude }`, `var messages: [ChatMessage]`, `var status: Status { idle, thinking, error(String) }`, `var mode: Mode`, `var grants: [Grant]`, `var draft: String`, `var pendingConfirmation: Confirmation?`, `func load()`, `func addGrant(url: URL)`, `func saveKey(_ key: String)`, `func run(_ text: String)` (startet internen Task), `func waitForRunEnd() async`, `func resolveConfirmation(_ allowed: Bool)`, `struct Confirmation: Identifiable { id, prompt }`. Init (testbar): `init(security: SecurityStore = SecurityStore(), store: PadPilotStore? = nil, makeProvider: ((Mode) throws -> ModelProvider)? = nil)` – Ohne injizierte Factory baut das VM echte Provider (AppleSystemModel/ClaudeClient mit Key aus dem Keychain). Chat-Befehl „nutz Claude“/„nutz lokal“ im Auftragstext überschreibt den Modus für diesen Lauf; `sessionID` und `mode` persistieren in UserDefaults (Verlauf überlebt App-Neustart); `run` blockt Doppelstarts; Auto-Modus: on-device → Claude, plus Rückfall Claude → on-device bei Netzwerk-/Key-Fehlern (Hint-Karte)
 
 - [ ] **Schritt 1: Tests schreiben**
 ```swift
@@ -1571,18 +1640,46 @@ final class ChatViewModelTests: XCTestCase {
     }
 
     func testBestaetigungsBruecke() async throws {
+        // Freigabe + existierende Datei nötig, damit write_file den Dialog auslöst
+        let sec = SecurityStore(defaults: UserDefaults(suiteName: UUID().uuidString)!)
+        let tmp = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: tmp, withIntermediateDirectories: true)
+        try "a".write(to: tmp.appendingPathComponent("exists.txt"), atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(at: tmp) }
+        let grant = try sec.addGrant(url: tmp)
         let fake = FakeProvider(script: [
             .init(text: "", toolCalls: [.init(id: "1", name: "write_file",
-                arguments: .object(["path": .string("D/exists.txt"), "content": .string("x")]))]),
+                arguments: .object(["path": .string("\(grant.name)/exists.txt"), "content": .string("x")]))]),
             .init(text: "fertig", toolCalls: [])
         ])
-        let vm = try makeVM { _ in fake }
+        let vm = ChatViewModel(security: sec, store: try PadPilotStore(inMemory: true), makeProvider: { _ in fake })
         vm.run("schreibe")
         while vm.pendingConfirmation == nil { await Task.yield() }   // Run wartet auf Bestätigung
         XCTAssertTrue(vm.pendingConfirmation?.prompt.contains("exists.txt") == true)
         vm.resolveConfirmation(false)
         await vm.waitForRunEnd()
         XCTAssertEqual(vm.messages.last?.text, "fertig")
+        XCTAssertEqual(try String(contentsOf: tmp.appendingPathComponent("exists.txt"), encoding: .utf8), "a")
+    }
+
+    func testSessionUeberlebtNeustart() async throws {
+        let fake = FakeProvider(script: [.init(text: "ok", toolCalls: [])])
+        let store = try PadPilotStore(inMemory: true)
+        let vm1 = ChatViewModel(store: store, makeProvider: { _ in fake })
+        vm1.run("hallo")
+        await vm1.waitForRunEnd()
+        let vm2 = ChatViewModel(store: store, makeProvider: { _ in fake })  // gleiche sessionID aus UserDefaults
+        vm2.load()
+        XCTAssertEqual(vm2.messages.count, 2)
+    }
+
+    func testDoppelterRunBlockiert() async throws {
+        let fake = FakeProvider(script: [.init(text: "ok", toolCalls: [])])
+        let vm = try makeVM { _ in fake }
+        vm.run("eins")
+        vm.run("zwei")   // während des ersten Laufs verworfen
+        await vm.waitForRunEnd()
+        XCTAssertEqual(vm.messages.count, 2) // 1× Nutzer + 1× Antwort
     }
 }
 ```
@@ -1592,6 +1689,7 @@ import SwiftUI
 import Observation
 
 @MainActor
+@Observable
 final class ChatViewModel {
     enum Mode: String, Codable { case auto, onDevice, claude }
     enum Status: Equatable { case idle, thinking, error(String) }
@@ -1602,10 +1700,18 @@ final class ChatViewModel {
         var continuation: CheckedContinuation<Bool, Never>?
     }
 
-    let sessionID = UUID()
+    let sessionID: UUID = {
+        if let data = UserDefaults.standard.data(forKey: "padpilot.session"),
+           let id = try? JSONDecoder().decode(UUID.self, from: data) { return id }
+        let id = UUID()
+        UserDefaults.standard.set((try? JSONEncoder().encode(id)) ?? Data(), forKey: "padpilot.session")
+        return id
+    }()
     var messages: [ChatMessage] = []
     var status: Status = .idle
-    var mode: Mode = .auto
+    var mode: Mode = UserDefaults.standard.string(forKey: "padpilot.mode").flatMap(Mode.init(rawValue:)) ?? .auto {
+        didSet { UserDefaults.standard.set(mode.rawValue, forKey: "padpilot.mode") }
+    }
     var grants: [Grant] = []
     var draft = ""
     var pendingConfirmation: Confirmation?
@@ -1640,7 +1746,11 @@ final class ChatViewModel {
     }
 
     func load() {
-        grants = security.loadGrants()
+        let (loaded, skipped) = security.loadGrants()
+        grants = loaded
+        if skipped > 0 && loaded.isEmpty {
+            status = .error("Alle Freigaben abgelaufen – bitte Ordner neu freigeben.")
+        }
         if let store { messages = store.load(sessionID: sessionID) }
     }
 
@@ -1659,16 +1769,29 @@ final class ChatViewModel {
     }
 
     private func fileTools() -> FileTools {
-        FileTools(roots: security.loadGrants())
+        FileTools(roots: security.loadGrants().grants)
     }
 
     func run(_ text: String) {
+        guard status != .thinking else { return }
+        // Einmal-Override aus dem Auftragstext (Spec: „nutz Claude“/„nutz lokal“)
+        var modeForRun = mode
+        var prompt = text
+        let lower = text.lowercased()
+        if lower.contains("nutz claude") {
+            modeForRun = .claude
+            prompt = prompt.replacingOccurrences(of: "nutz Claude", with: "", options: .caseInsensitive)
+        } else if lower.contains("nutz lokal") || lower.contains("nutz on-device") {
+            modeForRun = .onDevice
+            prompt = prompt.replacingOccurrences(of: "nutz lokal", with: "", options: .caseInsensitive)
+                .replacingOccurrences(of: "nutz on-device", with: "", options: .caseInsensitive)
+        }
         let prior = priorProviderMessages()
         messages.append(ChatMessage(role: .user, text: text))
         status = .thinking
         runTask = Task { [weak self] in
             guard let self else { return }
-            await self.executeRun(text: text, prior: prior)
+            await self.executeRun(prompt: prompt, prior: prior, modeForRun: modeForRun)
         }
     }
 
@@ -1676,33 +1799,52 @@ final class ChatViewModel {
         await runTask?.value
     }
 
-    private func executeRun(text: String, prior: [ProviderMessage]) async {
-        var allCards: [ActionCard] = []
+    private func executeRun(prompt: String, prior: [ProviderMessage], modeForRun: Mode) async {
         do {
-            let (provider, hint) = try resolveProvider()
-            if let hint { allCards.append(hint) }
-            let cards = ActorCardCollector()
-            activeCards = cards
-            let runner = AgentRunner(provider: provider, fileTools: fileTools(), backupDir: backupDir,
-                                     onCard: { cards.add($0) }, confirm: confirmBridge)
-            let result = try await runner.run(userText: text, prior: prior)
-            allCards += await cards.all
-            let finalText: String
-            switch result {
-            case .completed(let t, _): finalText = t
-            case .limitReached(let t, _): finalText = t
-            }
-            messages.append(ChatMessage(role: .assistant, text: finalText, cards: allCards))
+            let (provider, hint) = try resolveProvider(mode: modeForRun)
+            var cards: [ActionCard] = hint.map { [$0] } ?? []
+            let (finalText, stepCards) = try await runAgent(provider: provider, text: prompt, prior: prior)
+            cards += stepCards
+            messages.append(ChatMessage(role: .assistant, text: finalText, cards: cards))
             status = .idle
         } catch {
-            allCards.append(ActionCard(id: UUID(), kind: .error, title: "Fehler", detail: "\(error)", createdAt: Date()))
-            messages.append(ChatMessage(role: .assistant, text: errorText(error), cards: allCards))
+            // Auto-Rückfall (Spec: „Kein Internet → automatisch nur on-device, mit Hinweis“)
+            if modeForRun == .auto,
+               let me = error as? ModelError, me != .unavailable,
+               let onDevice = try? makeProvider(.onDevice) {
+                let hint = ActionCard(id: UUID(), kind: .hint,
+                                      title: "Claude nicht erreichbar – nutze on-device",
+                                      detail: "\(error)", createdAt: Date())
+                do {
+                    let (finalText, stepCards) = try await runAgent(provider: onDevice, text: prompt, prior: prior)
+                    messages.append(ChatMessage(role: .assistant, text: finalText, cards: [hint] + stepCards))
+                    status = .idle
+                    if let store { try? store.save(sessionID: sessionID, messages: messages) }
+                    return
+                } catch { /* fällt unten in die Fehlermeldung durch */ }
+            }
+            let errorCard = ActionCard(id: UUID(), kind: .error, title: "Fehler", detail: "\(error)", createdAt: Date())
+            messages.append(ChatMessage(role: .assistant, text: errorText(error), cards: [errorCard]))
             status = .idle
         }
         if let store { try? store.save(sessionID: sessionID, messages: messages) }
     }
 
-    private func resolveProvider() throws -> (ModelProvider, ActionCard?) {
+    private func runAgent(provider: ModelProvider, text: String, prior: [ProviderMessage]) async throws -> (String, [ActionCard]) {
+        let cards = ActorCardCollector()
+        activeCards = cards
+        let runner = AgentRunner(provider: provider, fileTools: fileTools(), backupDir: backupDir,
+                                 onCard: { cards.add($0) }, confirm: confirmBridge)
+        let result = try await runner.run(userText: text, prior: prior)
+        let finalText: String
+        switch result {
+        case .completed(let t, _): finalText = t
+        case .limitReached(let t, _): finalText = t
+        }
+        return (finalText, await cards.all)
+    }
+
+    private func resolveProvider(mode: Mode) throws -> (ModelProvider, ActionCard?) {
         switch mode {
         case .onDevice:
             return (try makeProvider(.onDevice), nil)
@@ -1910,8 +2052,10 @@ final class SettingsViewModel {
 import SwiftUI
 
 struct ChatView: View {
-    @State private var vm = ChatViewModel()
+    @State private var vm: ChatViewModel
     @State private var showSettings = false
+
+    init() { _vm = State(initialValue: ChatViewModel(store: try? PadPilotStore())) }
 
     var body: some View {
         NavigationStack {
@@ -1975,5 +2119,5 @@ struct ChatView: View {
 1. **Spec-Abdeckung:** Chat ✓ (T13/14), Ordner-Freigabe ✓ (T8/14), Datei-Werkzeuge ✓ (T5–7), kein Löschen ✓ (kein Werkzeug), Überschreiben nur mit Bestätigung + Backup ✓ (T7/12/13/14), Aktionskarten ✓ (T4/12/14), Hybrid-KI + Auto-Eskalation ✓ (T11/13), Verlauf ✓ (T9/13), Keychain ✓ (T8/14), CI/IPA ✓ (T1/14), Roadmap-Phasen außerhalb des MVP ✓.
 2. **Platzhalter:** keiner; bewusste Stellschrauben (Runner-Image, Simulator-Name, FM-Signaturen) sind als solche markiert und haben Prüf-Schritte.
 3. **Typ-Konsistenz:** `FileTools.write` heißt überall gleich; `Confirmation.continuation` (T13) ↔ ChatView `.alert` (T14); `AgentRunner.confirm` ist `(String) -> Bool` (VM macht `await MainActor.run`-Brücke) – konsistent zwischen T12/T13.
-4. **Review-Fokus:** Pfad-Flucht (T5), Überschreiben (T7/12/13), Loop (T12), Bookmark-Verfall (T8), 401/offline (T10/13) – jeweils mit Test verankert.
+4. **Review-Fokus:** Pfad-Flucht inkl. Symlink/Percent-Encoding (T5), Überschreiben inkl. Gate-Bypass über `overwrite:true` (T7/12/13), Werkzeug-Limit als Aufrufzähler (T12), Bookmark-Verfall mit Zähler + Neu-Freigabe-Hinweis (T8/13), 401/offline + Auto-Rückfall on-device (T10/13), Verlauf überlebt App-Neustart (T13) – jeweils mit Test verankert.
 ```

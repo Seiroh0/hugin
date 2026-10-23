@@ -55,7 +55,7 @@ Agent-Kern (Loop: planen → Werkzeug aufrufen → Ergebnis lesen → antworten)
    │
 KI-Schicht (LlamaProvider-Interface)
    ├── AppleSystemModel  (Foundation Models, on-device)
-   └── ClaudeClient      (HTTPS Messages API, Streaming, Key aus Keychain)
+   └── ClaudeClient      (HTTPS Messages API, Key aus Keychain)
       │
 Speicher: SwiftData (Chat-Verlauf, Freigaben, Einstellungen) · Keychain (API-Key)
 ```
