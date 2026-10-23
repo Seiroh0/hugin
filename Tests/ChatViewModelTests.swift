@@ -44,12 +44,15 @@ final class ChatViewModelTests: XCTestCase {
 
     func testAutoEskaliertBeiLaufzeitFehler() async throws {
         let claude = FakeProvider(script: [.init(text: "via Claude gerettet", toolCalls: [])], actor: .claude)
-        let vm = try makeVM { mode, _, _ in mode == .onDevice ? UnavailableProvider() : claude }
+        let vm = try makeVM { mode, _, _ in
+            if mode == .onDevice { return UnavailableProvider() as any ModelProvider }
+            return claude
+        }
         vm.mode = .auto
         vm.run("mach was")
         await vm.waitForRunEnd()
         XCTAssertEqual(vm.messages.last?.text, "via Claude gerettet")
-        XCTAssertTrue(vm.messages.last?.cards.contains { $0.kind == .handover })  // Laufzeit-Übergabe
+        XCTAssertTrue(vm.messages.last?.cards.contains { $0.kind == .handover } == true)  // Laufzeit-Übergabe
     }
 
     func testVerlaufWirdGespeichert() async throws {
