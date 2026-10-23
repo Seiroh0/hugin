@@ -63,6 +63,7 @@ struct LaunchSequenceView: View {
         // RootView blendet zur normalen UI (onFinished nach 1,4 s).
         let groupOpacity = phase == .ui ? 1 - p : 1
         guard groupOpacity > 0 else { return }
+        var ctx = ctx   // GraphicsContext ist Werttyp – mutierbare Kopie
         ctx.opacity = groupOpacity
 
         // 1. Stäbe: scaleY wachsen von unten im Stäbe-Fenster, linker Stab führt (Design-Frames)
@@ -79,7 +80,7 @@ struct LaunchSequenceView: View {
             var trail = Path()
             trail.move(to: pt(354, 650))
             trail.addLine(to: pt(670, 380))
-            let trimmed = trail.trim(from: 0, to: phase == .spur ? p : 1)
+            let trimmed = trail.trimmedPath(from: 0, to: phase == .spur ? p : 1)
             ctx.stroke(trimmed,
                        with: .linearGradient(trailGradient,
                                              startPoint: pt(354, 650), endPoint: pt(670, 380)),
