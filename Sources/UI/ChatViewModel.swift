@@ -39,6 +39,7 @@ final class ChatViewModel {
     // @MainActor-Closure, IUO: Zuweisung NACH allen anderen Properties (self-Capture erst dann erlaubt);
     // CardBuffer/FindingBuffer laufen als Parameter mit – kein MainActor-State aus @Sendable-Closures gelesen
     private var makeProvider: (@MainActor (Mode, CardBuffer, FindingBuffer) throws -> ModelProvider)!
+    private var confirmBridge: (@Sendable (ConfirmRequest) async -> Bool)!
     private var runTask: Task<Void, Never>?
 
     init(security: SecurityStore = SecurityStore(),
@@ -62,6 +63,10 @@ final class ChatViewModel {
                 guard let key = self.security.loadKey() else { throw ModelError.unauthorized }
                 return ClaudeClient(apiKey: key)
             }
+        }
+        self.confirmBridge = { [weak self] request in
+            guard let self else { return false }
+            return await self.presentConfirmation(request)
         }
     }
 
@@ -263,16 +268,6 @@ final class ChatViewModel {
         }
     }
 
-    private lazy var confirmBridge: @Sendable (ConfirmRequest) async -> Bool = { [weak self] request in
-        await MainActor.run {
-            await withCheckedContinuation { (c: CheckedContinuation<Bool, Never>) in
-                // Defensive: eine etwaige ältere Continuation freigeben (kein Deadlock/Leak)
-                self?.pendingConfirmation?.continuation?.resume(returning: false)
-                self?.pendingConfirmation = Confirmation(request: request, continuation: c)
-            }
-        }
-    }
-
     private func errorText(_ error: Error) -> String {
         switch error as? ModelError {
         case .unauthorized: return "Claude-API-Key ungültig – bitte in den Einstellungen prüfen. On-Device-Modus bleibt nutzbar."
@@ -285,5 +280,14 @@ final class ChatViewModel {
     func resolveConfirmation(_ allowed: Bool) {
         pendingConfirmation?.continuation?.resume(returning: allowed)
         pendingConfirmation = nil
+    }
+
+    @MainActor
+    private func presentConfirmation(_ request: ConfirmRequest) async -> Bool {
+        await withCheckedContinuation { (c: CheckedContinuation<Bool, Never>) in
+            // Defensive: eine etwaige ältere Continuation freigeben (kein Deadlock/Leak)
+            pendingConfirmation?.continuation?.resume(returning: false)
+            pendingConfirmation = Confirmation(request: request, continuation: c)
+        }
     }
 }
