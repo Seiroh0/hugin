@@ -35,7 +35,7 @@ jobs:
       - name: XcodeGen installieren
         run: brew install xcodegen
       - name: CodeQL initialisieren
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: swift
       - name: Projekt generieren
@@ -43,6 +43,6 @@ jobs:
       - name: Build (fuer CodeQL-Extraktion)
         run: xcodebuild -project Hugin.xcodeproj -scheme Hugin -destination 'platform=iOS Simulator,name=iPad (A16)' build
       - name: CodeQL analysieren
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:swift"
